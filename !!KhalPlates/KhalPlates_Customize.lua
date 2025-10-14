@@ -14,8 +14,8 @@ local NP_HEIGHT = 39.162796302247 -- Nameplate original height (don't modify)
 
 -------------------- Customization Parameters --------------------
 local globalYoffset = 22 -- Global vertical offset for nameplates
-local VPscale = 0.9      -- Global scale for nameplates
-local NPminLevel = 10    -- Minimum unit level to show its nameplate
+local VPscale = 1        -- Global scale for nameplates
+local NPminLevel = 1     -- Minimum unit level to show its nameplate
 local fontPath = "Fonts\\ARIALN.TTF" -- Font used for nameplate text
 -- Name Text
 local nameText_fontSize = 9
