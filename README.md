@@ -4,6 +4,7 @@
 ## Features  
 - Modified nameplate appearance (configurable in `KhalPlates_Customize.lua`).
 - Nameplates drawing order based on distance to the camera.
+- Defined proper frame level spacing to prevent subregions from overlapping between plates.
 - Custom glow for the target and mouseover nameplates.
 - TotemPlates-style functionality for totems and specific NPCs (editable list in the Totems folder).
 - Optional class icons in battlegrounds and arenas.
