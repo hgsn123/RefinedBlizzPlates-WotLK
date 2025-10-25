@@ -460,6 +460,7 @@ KP.MainOptionTable = {
 						KP.dbp.raidTargetIcon_offsetY = 0
 						KP.dbp.classIcon_offsetX = 0
 						KP.dbp.classIcon_offsetY = 0
+						KP:MoveAllVisiblePlates(KP.dbp.globalOffsetX - KP.globalOffsetX, 0)
 						KP:UpdateAllNameTexts()
 						KP:UpdateAllLevelTexts()
 						KP:UpdateAllHealthBars()
@@ -467,7 +468,6 @@ KP.MainOptionTable = {
 						KP:UpdateAllCastBars()
 						KP:UpdateAllGlows()
 						KP:UpdateAllIcons()
-						KP:MoveAllVisiblePlates(KP.dbp.globalOffsetX - KP.globalOffsetX, 0)
 						KP.globalOffsetX = KP.dbp.globalOffsetX
 					end,
 				},

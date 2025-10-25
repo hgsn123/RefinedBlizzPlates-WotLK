@@ -302,8 +302,8 @@ end
 
 function KP:OnProfileChanged(...)
 	self.dbp = self.db.profile
-	self:UpdateProfile()
 	self:MoveAllVisiblePlates(self.dbp.globalOffsetX - self.globalOffsetX, self.dbp.globalOffsetY - self.globalOffsetY)
+	self:UpdateProfile()
 	self.globalOffsetX = self.dbp.globalOffsetX
 	self.globalOffsetY = self.dbp.globalOffsetY
 end
