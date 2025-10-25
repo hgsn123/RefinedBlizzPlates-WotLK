@@ -2,7 +2,7 @@
 **KhalPlates** is a lightweight nameplates addon for WoW 3.3.5a, based on [_VirtualPlates](https://www.wowinterface.com/downloads/info14964-_VirtualPlates.html).  
 
 ## Features  
-- Modified nameplate appearance (configurable in `KhalPlates_Customize.lua`).
+- Blizzlike nameplates with adjustable visual parameters.
 - Nameplates drawing order based on distance to the camera.
 - Adjusted Z-order spacing to prevent subregions from overlapping between nameplates
 - Custom glow for the target and mouseover nameplates.
@@ -19,11 +19,11 @@
 </p>
 
 ## Installation  
-1. [Download](https://github.com/KhalGH/KhalPlates-WotLK/releases/download/v1.1/KhalPlates-v1.1.zip) the addon
+1. [Download](https://github.com/KhalGH/KhalPlates-WotLK/releases/download/v1.2/KhalPlates-v1.2.zip) the addon
 2. Extract the **!!KhalPlates** folder into `World of Warcraft/Interface/AddOns/`.  
 3. Restart the game and enable the addon.  
 
 ## Information  
-- **Addon Version:** 1.1  
+- **Addon Version:** 1.2  
 - **Game Version:** 3.3.5a (WotLK)  
 - **Author:** Khal  
