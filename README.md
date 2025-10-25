@@ -17,6 +17,14 @@
   <img src="https://raw.githubusercontent.com/KhalGH/KhalPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG3.jpg" 
        alt="KhalPlatesIMG3" width="90%">
 </p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/KhalGH/KhalPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG4.jpg" 
+       alt="KhalPlatesIMG4" width="90%">
+</p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/KhalGH/KhalPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG5.jpg" 
+       alt="KhalPlatesIMG5" width="90%">
+</p>
 
 ## Installation  
 1. [Download](https://github.com/KhalGH/KhalPlates-WotLK/releases/download/v1.2/KhalPlates-v1.2.zip) the addon
