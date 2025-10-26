@@ -6,8 +6,8 @@
 local AddonFile, KP = ...
 
 -- API
-local tonumber, select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitExists, IsInInstance, GetNumRaidMembers, GetRaidRosterInfo =
-      tonumber, select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitExists, IsInInstance, GetNumRaidMembers, GetRaidRosterInfo
+local tonumber, select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitExists, IsInInstance, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS =
+      tonumber, select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitExists, IsInInstance, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS
 
 -- Localized namespace definitions
 local VirtualPlates = KP.VirtualPlates
@@ -65,17 +65,31 @@ do
 			end
 		end
 
-		-- Sets the texture based on player or NPC nameplate
+		-- Sets the texture and name text colors based on player or NPC nameplate
+		Virtual.nameString = Virtual.nameText:GetText()
+		local name = Virtual.nameString
 		local healthBar = Virtual.healthBar
-		local class = ClassByPlateColor(healthBar)
+		Virtual.classKey = ClassByPlateColor(healthBar)
+		local class = Virtual.classKey
+		local classColor	
 		if class then
 			healthBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.healthBar_playerTex))
+			if class == "FRIENDLY" and ClassByFriendName[name] and KP.dbp.nameText_classColorFriends then
+				classColor = RAID_CLASS_COLORS[ClassByFriendName[name]]
+			elseif class ~= "FRIENDLY" and KP.dbp.nameText_classColorEnemies then
+				classColor = RAID_CLASS_COLORS[class]
+			end
 		else
 			healthBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.healthBar_npcTex))
 		end
+		Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB = unpack(KP.dbp.nameText_color)
+		if classColor then
+			Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB = classColor.r, classColor.g, classColor.b
+		end
+		Virtual.healthBar.nameText:SetTextColor(Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB)
+		Virtual.nameTextIsYellow = false
 
 		------------------------ TotemPlates Handling ------------------------
-		local name = Virtual.nameText:GetText()
 		local totemTex = TotemTexs[name]
 		if totemTex then
 			if not Plate.totemPlate then
@@ -122,6 +136,8 @@ do
 		PlatesVisible[Plate] = nil
 		local Virtual = VirtualPlates[Plate]
 		Virtual.classIcon:Hide()
+		Virtual.nameString = nil
+		Virtual.classKey = nil
 		Virtual:Hide(); -- Explicitly hide so IsShown returns false.
 		if Plate.totemPlate then Plate.totemPlate:Hide() end
 	end
@@ -133,13 +149,12 @@ do
 
 	--- Update all visible nameplates
 	local function PlatesUpdate()
-		local targetExists = UnitExists("target")
 		local mouseoverName = UnitName("mouseover")
 		for Plate, Virtual in pairs(PlatesVisible) do
 			local Depth = Virtual:GetEffectiveDepth()
 			if Depth > 0 then
 				SortOrder[#SortOrder + 1] = Plate
-				if targetExists and Virtual:GetAlpha() == 1 then
+				if Virtual.isTarget then
 					Depths[Plate] = -1
 				else
 					Depths[Plate] = Depth
@@ -148,12 +163,15 @@ do
 				local healthBarHighlight = Virtual.healthBarHighlight
 				local nameText = Virtual.healthBar.nameText
 				if healthBarHighlight:IsShown() then
-					nameText:SetTextColor(1, 1, 0) -- yellow
-					if nameText:GetText() ~= mouseoverName then
+					if Virtual.nameString ~= mouseoverName then
 						healthBarHighlight:Hide()
+					elseif not Virtual.nameTextIsYellow then
+						nameText:SetTextColor(1, 1, 0)
+						Virtual.nameTextIsYellow  = true
 					end
-				else
-					nameText:SetTextColor(unpack(KP.dbp.nameText_color))
+				elseif Virtual.nameTextIsYellow then
+					nameText:SetTextColor(Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB)
+					Virtual.nameTextIsYellow = false
 				end
 			end
 		end
@@ -165,7 +183,7 @@ do
 				SetFrameLevel(Virtual, Index * PlateLevels)
 				SetFrameLevel(Virtual.healthBar, Index * PlateLevels)
 				local TotemPlate = Plate.totemPlate
-				local totemTex = TotemTexs[Virtual.nameText:GetText()]
+				local totemTex = TotemTexs[Virtual.nameString]
 				if TotemPlate and totemTex and totemTex ~= "" then
 					SetFrameLevel(TotemPlate, Index * PlateLevels)
 				end
@@ -378,20 +396,29 @@ end
 
 function EventHandler:PLAYER_ENTERING_WORLD()
 	local _, instanceType = IsInInstance()
+	UpdateClassByFriendName()
 	if instanceType == "pvp" or instanceType == "arena" then
-		KP.inPvPInstance = true
-		UpdateClassByFriendName()
-		self:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	elseif KP.inPvPInstance then
+		KP.inPvPInstance = true	
+	else
 		KP.inPvPInstance = false
-		self:UnregisterEvent("PARTY_MEMBERS_CHANGED")
-		wipe(ClassByFriendName)
 	end
 end
 
 function EventHandler:PARTY_MEMBERS_CHANGED()
-	if KP.inPvPInstance then 
-		UpdateClassByFriendName() 
+	UpdateClassByFriendName()
+	KP:UpdateClassColorNames()
+end
+
+local DelayedUpdateClassColorNames = CreateFrame("Frame")
+DelayedUpdateClassColorNames:Hide()
+DelayedUpdateClassColorNames:SetScript("OnUpdate", function(self)
+	self:Hide()
+	KP:UpdateClassColorNames()
+end)
+
+function EventHandler:UNIT_FACTION(event, unit)
+	if unit == "player" then
+		DelayedUpdateClassColorNames:Show()
 	end
 end
 
@@ -437,6 +464,7 @@ EventHandler:RegisterEvent("PLAYER_REGEN_ENABLED")
 EventHandler:RegisterEvent("PLAYER_TARGET_CHANGED")
 EventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
 EventHandler:RegisterEvent("PARTY_MEMBERS_CHANGED")
+EventHandler:RegisterEvent("UNIT_FACTION")
 EventHandler:RegisterEvent("PLAYER_PVP_RANK_CHANGED")
 
 local GetParent = EventHandler.GetParent

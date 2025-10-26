@@ -24,6 +24,8 @@ KP.dbp.nameText_offsetX = 0
 KP.dbp.nameText_offsetY = 0
 KP.dbp.nameText_width = 85 -- max text width before truncation (...)
 KP.dbp.nameText_color = {1, 1, 1} -- white
+KP.dbp.nameText_classColorFriends = true
+KP.dbp.nameText_classColorEnemies = false
 -- Level Text
 KP.dbp.levelText_hide = true
 KP.dbp.levelText_font = "Arial Narrow"
@@ -628,8 +630,43 @@ KP.MainOptionTable = {
 					step = 0.1,
 					disabled = function() return KP.dbp.nameText_hide end
 				},
-				nameText_width = {
+				nameText_color = {
 					order = 10,
+					type = "color",
+					name = "Base Text Color",
+					get = function(info)
+						local c = KP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						KP.dbp[info[#info]] = {r, g, b}
+						KP:UpdateAllNameTexts()
+						KP:UpdateClassColorNames()
+					end,
+					disabled = function() return KP.dbp.nameText_hide end
+				},
+				nameText_classColorFriends = {
+					order = 10.1,
+					type = "toggle",
+					name = "Class Colors on Friends",
+					desc = "Use class colors for friendly player names (only works for party or raid members).",
+					set = function(info, val)
+						KP.dbp[info[#info]] = val
+						KP:UpdateClassColorNames()
+					end,
+				},
+				nameText_classColorEnemies = {
+					order = 10.2,
+					type = "toggle",
+					name = "Class Colors on Enemies",
+					desc = "Use class colors for enemy player names. 'Class Colors in Nameplates' must be enabled.",
+					set = function(info, val)
+						KP.dbp[info[#info]] = val
+						KP:UpdateClassColorNames()
+					end,
+				},
+				nameText_width = {
+					order = 11,
 					type = "range",
 					name = "Width",
 					min = 50,
@@ -637,20 +674,6 @@ KP.MainOptionTable = {
 					step = 1,
 					set = function(info, val)
 						KP.dbp[info[#info]] = val
-						KP:UpdateAllNameTexts()
-					end,
-					disabled = function() return KP.dbp.nameText_hide end
-				},
-				nameText_color = {
-					order = 11,
-					type = "color",
-					name = "Text Color",
-					get = function(info)
-						local c = KP.dbp[info[#info]]
-						return c[1], c[2], c[3]
-					end,
-					set = function(info, r, g, b)
-						KP.dbp[info[#info]] = {r, g, b}
 						KP:UpdateAllNameTexts()
 					end,
 					disabled = function() return KP.dbp.nameText_hide end

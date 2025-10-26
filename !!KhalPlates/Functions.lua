@@ -127,10 +127,13 @@ local function SetupTargetGlow(Virtual)
 	healthBar.targetBorderDelay:Hide()
 	healthBar.targetBorderDelay:SetScript("OnUpdate", function(self)
 		self:Hide()
-		if healthBar.nameText:GetText() == UnitName("target") and Virtual:GetAlpha() == 1 then
+		Virtual.Alpha = Virtual:GetAlpha()
+		if Virtual.nameString == UnitName("target") and Virtual.Alpha == 1 then
+			Virtual.isTarget = true
 			healthBar.targetGlow:Show()
 			if RealPlate.totemPlate then RealPlate.totemPlate.targetGlow:Show() end
 		else
+			Virtual.isTarget = false
 			healthBar.targetGlow:Hide()
 			if RealPlate.totemPlate then RealPlate.totemPlate.targetGlow:Hide() end
 		end
@@ -428,8 +431,8 @@ function KP:MoveAllVisiblePlates(diffX, diffY)
 end
 
 function KP:UpdateLevelFilter()
-	for _, Virtual in pairs(VirtualPlates) do
-		local name = Virtual.nameText:GetText()
+	for _, Virtual in pairs(PlatesVisible) do
+		local name = Virtual.nameString
 		local totemTex = KP.TotemTexs[name]
 		if totemTex then
 			Virtual:Hide()
@@ -455,7 +458,7 @@ function KP:UpdateAllHealthBars()
 			healthBarBorder:SetTexture("Interface\\Tooltips\\Nameplate-Border")
 		end
 		healthBarBorder:SetVertexColor(unpack(KP.dbp.healthBar_borderTint))
-		if ClassByPlateColor(healthBar) then
+		if Virtual.classKey then
 			healthBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.healthBar_playerTex))
 		else
 			healthBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.healthBar_npcTex))
@@ -632,10 +635,10 @@ end
 
 function KP:UpdateClassIconsShown()
 	for Plate, Virtual in pairs(PlatesVisible) do
-		local name = Virtual.nameText:GetText()
+		local name =  Virtual.nameString
 		Virtual.classIcon:Hide()
 		if not KP.TotemTexs[name] and KP.inPvPInstance then
-			local class = ClassByPlateColor(Virtual.healthBar)
+			local class = Virtual.classKey
 			if class then
 				if class == "FRIENDLY" and KP.dbp.showClassOnFriends then
 					class = ClassByFriendName[name] or ""
@@ -647,6 +650,26 @@ function KP:UpdateClassIconsShown()
 				end
 			end
 		end
+	end
+end
+
+function KP:UpdateClassColorNames()
+	for _, Virtual in pairs(PlatesVisible) do
+		local class = Virtual.classKey
+		local classColor
+		if class then
+			if class == "FRIENDLY" and ClassByFriendName[Virtual.nameString] and KP.dbp.nameText_classColorFriends then
+				classColor = RAID_CLASS_COLORS[ClassByFriendName[Virtual.nameString]]
+			elseif class ~= "FRIENDLY" and KP.dbp.nameText_classColorEnemies then
+				classColor = RAID_CLASS_COLORS[class]
+			end
+		end
+		Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB = unpack(KP.dbp.nameText_color)
+		if classColor then
+			Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB = classColor.r, classColor.g, classColor.b
+		end
+		Virtual.healthBar.nameText:SetTextColor(Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB)
+		Virtual.nameTextIsYellow = false
 	end
 end
 
@@ -662,6 +685,7 @@ function KP:UpdateProfile()
 	self:UpdateAllIcons()
 	self:UpdateAllTotemPlates()
 	self:UpdateClassIconsShown()
+	self:UpdateClassColorNames()
 end
 
 ----------- Reference for Core.lua -----------
