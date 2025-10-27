@@ -52,13 +52,15 @@ local function SetupHealthBorder(healthBar)
 	healthBar.healthBarBorder:SetPoint("CENTER", 10.5, 9)
 end
 
-local function SetupBarBackground(Bar)
+local function SetupBarBackground(Bar, hide)
 	if Bar.BackgroundTex then return end 
 	Bar.BackgroundTex = Bar:CreateTexture(nil, "BACKGROUND")
 	Bar.BackgroundTex:SetTexture(ASSETS .. "PlateBorders\\NamePlate-Background")
 	Bar.BackgroundTex:SetSize(KP.NP_WIDTH, KP.NP_HEIGHT)
 	Bar.BackgroundTex:SetPoint("CENTER", 10.5, 9)
-	Bar.BackgroundTex:Hide()
+	if hide then
+		Bar.BackgroundTex:Hide()
+	end
 end
 
 local function SetupNameText(healthBar)
@@ -207,11 +209,10 @@ local function SetupCastTimer(castBar)
 	castBar:HookScript("OnValueChanged", function(self, val)
 		local min, max = self:GetMinMaxValues()
 		if max and val then
-			local remaining = max - val
 			if UnitChannelInfo("target") then
 				self.castTimerText:SetFormattedText("%.1f", val)
 			else
-				self.castTimerText:SetFormattedText("%.1f", remaining)
+				self.castTimerText:SetFormattedText("%.1f", max - val)
 			end
 		end
 	end)
@@ -327,7 +328,7 @@ local function SetupKhalPlate(Virtual)
 	SetupTargetGlow(Virtual)
 	SetupHealthText(Virtual.healthBar)
 	SetupBarBackground(Virtual.healthBar)
-	SetupBarBackground(Virtual.castBar)
+	SetupBarBackground(Virtual.castBar, true)
 	SetupCastText(Virtual)
 	SetupCastTimer(Virtual.castBar)
 	SetupBossIcon(Virtual)
