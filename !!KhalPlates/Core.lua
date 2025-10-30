@@ -244,10 +244,10 @@ do
 		Virtual:Hide() -- Gets explicitly shown on plate show
 		Virtual:SetPoint("TOP")
 		Virtual:SetSize(NP_WIDTH, NP_HEIGHT)
-		Virtual:SetScale(KP.dbp.globalScale)
 
 		ReparentChildren(Plate, Plate:GetChildren())
 		ReparentRegions(Plate, Plate:GetRegions())
+		Virtual:SetScale(KP.dbp.globalScale)
 		Virtual:EnableDrawLayer("HIGHLIGHT") -- Allows the highlight to show without enabling mouse events
 
 		Plate:SetScript("OnShow", PlateOnShow)
@@ -257,7 +257,7 @@ do
 		for Key, Value in pairs(PlateOverrides) do
 			Virtual[Key] = Value
 		end
-
+		
 		SetupKhalPlate(Virtual)
 		--SetupHitboxTexture(Plate)
 
