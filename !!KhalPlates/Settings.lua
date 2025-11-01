@@ -92,8 +92,32 @@ KP.dbp.classIcon_anchor = "Left"
 KP.dbp.classIcon_offsetX = 0
 KP.dbp.classIcon_offsetY = 0
 -- Totem Plates
-KP.dbp.totemSize = 23 -- Size of the totem (or NPC) icon replacing the nameplate
+KP.dbp.totemSize = 24 -- Size of the totem (or NPC) icon replacing the nameplate
 KP.dbp.totemOffset = 0 -- Vertical offset for totem icon
+KP.dbp.TotemsCheck = { -- 1 = Icon, 0 = Hiden, false = nameplate
+	["Cleansing Totem"] = 1,
+	["Earth Elemental Totem"] = 1,
+	["Earthbind Totem"] = 1,
+	["Fire Elemental Totem"] = 1,
+	["Grounding Totem"] = 1,
+	["Mana Tide Totem"] = 1,
+	["Tremor Totem"] = 1,
+	["Windfury Totem"] = 1,
+	["Wrath of Air Totem"] = 1,
+	["Sentry Totem"] = 1,
+	["Fire Resistance Totem"] = 1,
+	["Flametongue Totem"] = 1,
+	["Frost Resistance Totem"] = 1,
+	["Healing Stream Totem"] = 1,
+	["Mana Spring Totem"] = 1,
+	["Magma Totem"] = 1,
+	["Nature Resistance Totem"] = 1,
+	["Searing Totem"] = 1,
+	["Stoneclaw Totem"] = 1,
+	["Stoneskin Totem"] = 1,
+	["Strength of Earth Totem"] = 1,
+	["Totem of Wrath"] = 1,
+}
 
 -------------------- Options Table --------------------
 KP.MainOptionTable = {
@@ -1304,7 +1328,7 @@ KP.MainOptionTable = {
 					step = 0.1,
 					set = function(info, val)
 						KP.dbp[info[#info]] = val
-						KP:UpdateAllTotemPlates()
+						KP:UpdateAllTotemIcons()
 					end,
 				},
 				totemOffset = {
@@ -1316,7 +1340,7 @@ KP.MainOptionTable = {
 					step = 0.1,
 					set = function(info, val)
 						KP.dbp[info[#info]] = val
-						KP:UpdateAllTotemPlates()
+						KP:UpdateAllTotemIcons()
 					end,
 				},
 			},
@@ -1325,26 +1349,176 @@ KP.MainOptionTable = {
 			order = 6,
 			name = "Totems",
 			type = "group",
+			args = {}
+		},
+	},
+}
+
+local TotemOrder = { "earth", "fire", "water", "air" }
+
+local TotemTextColor = {
+	["earth"] = "|cFFCCAA00",
+	["fire"]  = "|cFFFF5555",
+	["water"] = "|cFF3366FF",
+	["air"]   = "|cFF77DDFF",
+}
+
+local TotemGroups = {
+	["earth"] = {
+		"Earth Elemental Totem",
+		"Earthbind Totem",
+		"Stoneclaw Totem",
+		"Stoneskin Totem",
+		"Strength of Earth Totem",
+		"Tremor Totem",
+	},
+	["fire"] = {
+		"Fire Elemental Totem",
+		"Flametongue Totem",
+		"Frost Resistance Totem",
+		"Magma Totem",
+		"Searing Totem",
+		"Totem of Wrath",
+	},
+	["water"] = {
+		"Cleansing Totem",
+		"Fire Resistance Totem",
+		"Healing Stream Totem",
+		"Mana Spring Totem",
+		"Mana Tide Totem",
+	},
+	["air"] = {
+		"Grounding Totem",
+		"Nature Resistance Totem",
+		"Sentry Totem",
+		"Windfury Totem",
+		"Wrath of Air Totem",
+	},
+}
+
+local TotemIDs = {
+    ["Earth Elemental Totem"] = 2062,
+    ["Earthbind Totem"] = 2484,
+    ["Stoneclaw Totem"] = 58582,
+    ["Stoneskin Totem"] = 58753,
+    ["Strength of Earth Totem"] = 58643,
+    ["Tremor Totem"] = 8143,
+    ["Fire Elemental Totem"] = 2894,
+    ["Flametongue Totem"] = 58656,
+    ["Frost Resistance Totem"] = 58745,
+    ["Magma Totem"] = 58734,
+    ["Searing Totem"] = 58704,
+    ["Totem of Wrath"] = 57722,
+    ["Cleansing Totem"] = 8170,
+    ["Fire Resistance Totem"] = 58739,
+    ["Healing Stream Totem"] = 58757,
+    ["Mana Spring Totem"] = 58774,
+    ["Mana Tide Totem"] = 16190,
+    ["Grounding Totem"] = 8177,
+    ["Nature Resistance Totem"] = 58749,
+    ["Sentry Totem"] = 6495,
+    ["Windfury Totem"] = 8512,
+    ["Wrath of Air Totem"] = 3738,
+}
+
+local tooltip = CreateFrame("GameTooltip", "KhalPlatesTooltip", UIParent, "GameTooltipTemplate")
+tooltip:Show()
+tooltip:SetOwner(UIParent, "ANCHOR_NONE")
+
+function KP:UpdateTotemDesc()
+	for name, group in pairs(KP.MainOptionTable.args.tab6.args) do
+		local spellID = TotemIDs[name]
+		if spellID then
+			tooltip:SetHyperlink("spell:" .. spellID)
+			local lines = tooltip:NumLines()
+			if lines > 0 then
+				group.args.desc.name = _G["KhalPlatesTooltipTextLeft" .. lines]:GetText() or ""
+			end
+		end
+	end
+end
+
+for i, element in ipairs(TotemOrder) do 
+ 	for j, name in ipairs(TotemGroups[element]) do
+        local spellID = TotemIDs[name]
+		local totemName, _, icon = GetSpellInfo(spellID)
+        local iconString = "\124T" .. icon .. ":26\124t"
+		KP.MainOptionTable.args.tab6.args[name] = {
+			type = "group",
+			name = iconString .. TotemTextColor[element] .. totemName .. "|r",
+			order = 10*i + j,
 			args = {
-				blank1 = {
+				header = {
+					type = "header",
+					name = totemName,
 					order = 1,
+				},
+				blank1 = {
+					order = 2,
 					type = "description",
 					name = "",
-				},
-				Totems_header = {
-					order = 2,
-					type = "header",
-					name = "In Development",
 				},
 				blank2 = {
 					order = 3,
 					type = "description",
 					name = "",
-				}
-			}						
+				},
+				desc = {
+					order = 4,
+					type = "description",
+					name = "",
+					image = icon,
+					imageWidth = 32,
+					imageHeight = 32,
+				},
+				blank3 = {
+					order = 5,
+					type = "description",
+					name = "",
+				},
+				blank4 = {
+					order = 6,
+					type = "description",
+					name = "",
+				},
+				blank5 = {
+					order = 7,
+					type = "description",
+					name = "",
+				},
+				enable = {
+					type = "toggle",
+					name = "Enable TotemPlate",
+					desc = "Replaces the nameplate with a totem icon.",
+					order = 8,
+					get = function()
+						return KP.dbp.TotemsCheck[name] ~= false
+					end,
+					set = function(_, val)
+						KP.dbp.TotemsCheck[name] = val and (KP.dbp.TotemsCheck[name] or 1) or false
+						KP:UpdateAllTotemPlates()
+					end,
+				},
+				hide = {
+					type = "toggle",
+					name = "Hide Totem",
+					desc = "Completely hides the nameplate and the totemplate for this totem.",
+					order = 9,
+					disabled = function()
+						return KP.dbp.TotemsCheck[name] == false
+					end,
+					get = function()
+						return KP.dbp.TotemsCheck[name] == 0
+					end,
+					set = function(_, val)
+						KP.dbp.TotemsCheck[name] = val and 0 or 1
+						KP:UpdateAllTotemPlates()
+					end,
+				},
+			},
 		}
-	}
-}
+	end
+end
 
 KP.AboutTable = {
 	name = "About",

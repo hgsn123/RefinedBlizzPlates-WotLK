@@ -14,4 +14,15 @@
   <Script file="Totems\Totems-ruRU.lua"/>
   <Script file="Totems\Totems-frFR.lua"/>
   <Script file="Totems\Totems-zhCN.lua"/>
+  <Script file="Totems\Totems-zhTW.lua"/>
+  <Script file="Totems\Totems-koKR.lua"/>
+  <Script file="NPCs\NPCs-enUS.lua"/>
+  <Script file="NPCs\NPCs-deDE.lua"/>
+  <Script file="NPCs\NPCs-esES.lua"/>
+  <Script file="NPCs\NPCs-esMX.lua"/>
+  <Script file="NPCs\NPCs-ruRU.lua"/>
+  <Script file="NPCs\NPCs-frFR.lua"/>
+  <Script file="NPCs\NPCs-zhCN.lua"/>
+  <Script file="NPCs\NPCs-zhTW.lua"/>
+  <Script file="NPCs\NPCs-koKR.lua"/>
 </Ui>

@@ -21,7 +21,6 @@ local UpdateTargetGlow = KP.UpdateTargetGlow
 local ClassByPlateColor = KP.ClassByPlateColor
 local SetupKhalPlate = KP.SetupKhalPlate
 local SetupTotemPlate = KP.SetupTotemPlate
-local TotemTexs = KP.TotemTexs
 
 -- Local definitions
 local EventHandler = CreateFrame("Frame", nil, WorldFrame) -- Main addon frame (event handler + access to native frame methods)
@@ -91,18 +90,21 @@ do
 		Virtual.nameTextIsYellow = false
 
 		------------------------ TotemPlates Handling ------------------------
-		local totemTex = TotemTexs[name]
-		if totemTex then
+		local totemKey = KP.Totems[name]
+		local totemCheck = KP.dbp.TotemsCheck[totemKey]
+		local npcKey = KP.NPCs[name]
+		if totemCheck or npcKey then
 			if not Plate.totemPlate then
 				SetupTotemPlate(Plate) -- Setup TotemPlate on the fly
 			end
 			Virtual:Hide()
-			if totemTex ~= "" then
+			local textureKey = (totemCheck == 1 and totemKey) or (npcKey ~= "" and npcKey)
+			if textureKey then
 				Plate.totemPlate:Show()
-				Plate.totemPlate.icon:SetTexture(ASSETS .. "Totems\\" .. totemTex)
+				Plate.totemPlate.icon:SetTexture(ASSETS .. "Icons\\" .. textureKey)
+				Plate.totemPlateIsShown = true
 			end
 		else
-			if Plate.totemPlate then Plate.totemPlate:Hide() end
 			--------------- Nameplate Level Filter --------------
 			local level = tonumber(Virtual.levelText:GetText())
 			if level and level < KP.dbp.levelFilter then
@@ -141,6 +143,7 @@ do
 		Virtual.classKey = nil
 		Virtual:Hide(); -- Explicitly hide so IsShown returns false.
 		if Plate.totemPlate then Plate.totemPlate:Hide() end
+		Plate.totemPlateIsShown = nil
 	end
 
 	--- Subroutine for table.sort to depth-sort plate virtuals.
@@ -149,10 +152,11 @@ do
 	end
 
 	--- Update all visible nameplates
+	local mouseoverName, Depth, healthBarHighlight, nameText, Virtual, BGHframe
 	local function PlatesUpdate()
-		local mouseoverName = UnitName("mouseover")
+		mouseoverName = UnitName("mouseover")
 		for Plate, Virtual in pairs(PlatesVisible) do
-			local Depth = Virtual:GetEffectiveDepth()
+			Depth = Virtual:GetEffectiveDepth()
 			if Depth > 0 then
 				SortOrder[#SortOrder + 1] = Plate
 				if Virtual.isTarget then
@@ -161,8 +165,8 @@ do
 					Depths[Plate] = Depth
 				end
 				----------------------- Improved mouseover highlight -----------------------
-				local healthBarHighlight = Virtual.healthBarHighlight
-				local nameText = Virtual.healthBar.nameText
+				healthBarHighlight = Virtual.healthBarHighlight
+				nameText = Virtual.healthBar.nameText
 				if healthBarHighlight:IsShown() then
 					if Virtual.nameString ~= mouseoverName then
 						healthBarHighlight:Hide()
@@ -180,15 +184,13 @@ do
 		if #SortOrder > 0 then
 			sort(SortOrder, SortFunc)
 			for Index, Plate in ipairs(SortOrder) do
-				local Virtual = PlatesVisible[Plate]
+				Virtual = PlatesVisible[Plate]
 				SetFrameLevel(Virtual, Index * PlateLevels)
 				SetFrameLevel(Virtual.healthBar, Index * PlateLevels)
-				local TotemPlate = Plate.totemPlate
-				local totemTex = TotemTexs[Virtual.nameString]
-				if TotemPlate and totemTex and totemTex ~= "" then
-					SetFrameLevel(TotemPlate, Index * PlateLevels)
+				if Plate.totemPlateIsShown then
+					SetFrameLevel(Plate.totemPlate, Index * PlateLevels)
 				end
-				local BGHframe = Virtual.BGHframe
+				BGHframe = Virtual.BGHframe
 				if BGHframe then
 					SetFrameLevel(BGHframe, Index * PlateLevels + 1) 
 				end
@@ -403,9 +405,8 @@ function KP:Initialize()
 	self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileDeleted", "OnProfileChanged")
-	
-	self.dbp = self.db.profile -- Replace default profile with AceDB profile
 
+	self.dbp = self.db.profile -- Replace default profile with AceDB profile
 	self.globalOffsetX = self.dbp.globalOffsetX
 	self.globalOffsetY = self.dbp.globalOffsetY
 
@@ -426,6 +427,12 @@ function EventHandler:ADDON_LOADED(event, Addon)
 		self:UnregisterEvent(event)
 		self[event] = nil
 	end
+end
+
+function EventHandler:PLAYER_LOGIN(event)
+	KP:UpdateTotemDesc()
+	self:UnregisterEvent(event)
+	self[event] = nil
 end
 
 function EventHandler:PLAYER_REGEN_ENABLED()
@@ -528,6 +535,7 @@ end
 
 EventHandler:SetScript("OnEvent", EventHandler.OnEvent)
 EventHandler:RegisterEvent("ADDON_LOADED")
+EventHandler:RegisterEvent("PLAYER_LOGIN")
 EventHandler:RegisterEvent("PLAYER_REGEN_DISABLED")
 EventHandler:RegisterEvent("PLAYER_REGEN_ENABLED")
 EventHandler:RegisterEvent("PLAYER_TARGET_CHANGED")

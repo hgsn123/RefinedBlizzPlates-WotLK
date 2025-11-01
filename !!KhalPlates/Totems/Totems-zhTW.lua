@@ -1,18 +1,18 @@
 
-if GetLocale() ~= "ruRU" then return end
+if GetLocale() ~= "zhTW" then return end
 
 select(2, ...).Totems = {
-	["Тотем очищения"] = "Cleansing Totem",
-	["Тотем противоядия"] = "Poison Cleansing Totem",
-	["Тотем элементаля земли"] = "Earth Elemental Totem",
-	["Тотем оков земли"] = "Earthbind Totem",
-	["Тотем элементаля огня"] = "Fire Elemental Totem",
-	["Тотем заземления"] = "Grounding Totem",
-	["Тотем прилива маны"] = "Mana Tide Totem",
-	["Тотем трепета"] = "Tremor Totem",
-	["Тотем неистовства ветра"] = "Windfury Totem",
-	["Тотем гнева воздуха"] = "Wrath of Air Totem",
-	["Сторожевой тотем"] = "Sentry Totem",
+	["祛病圖騰"] = "Cleansing Totem",
+	["清毒圖騰"] = "Poison Cleansing Totem",
+	["土元素圖騰"] = "Earth Elemental Totem",
+	["地縛圖騰"] = "Earthbind Totem",
+	["火元素圖騰"] = "Fire Elemental Totem",
+	["根基圖騰"] = "Grounding Totem",
+	["法力之潮圖騰"] = "Mana Tide Totem",
+	["戰慄圖騰"] = "Tremor Totem",
+	["風怒圖騰"] = "Windfury Totem",
+	["風懲圖騰"] = "Wrath of Air Totem",
+	["崗哨圖騰"] = "Sentry Totem",
 	["Fire Resistance Totem"] = "Fire Resistance Totem",
 	["Fire Resistance Totem II"] = "Fire Resistance Totem",
 	["Fire Resistance Totem III"] = "Fire Resistance Totem",

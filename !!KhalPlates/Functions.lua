@@ -406,7 +406,6 @@ local function SetupTotemPlate(Plate)
 	Plate.totemPlate = CreateFrame("Frame", nil, Plate)
 	Plate.totemPlate:SetPoint("TOP", 0, KP.dbp.totemOffset - 5)
 	Plate.totemPlate:SetSize(KP.dbp.totemSize, KP.dbp.totemSize)
-	Plate.totemPlate:SetScale(KP.dbp.globalScale)
 	Plate.totemPlate:Hide()
 	Plate.totemPlate.icon = Plate.totemPlate:CreateTexture(nil, "ARTWORK")
 	Plate.totemPlate.icon:SetAllPoints(Plate.totemPlate)
@@ -422,9 +421,6 @@ end
 function KP:UpdateAllVirtualsScale()
 	for Plate, Virtual in pairs(VirtualPlates) do
 		Virtual:SetScale(KP.dbp.globalScale)
-		if Plate.totemPlate then
-			Plate.totemPlate:SetScale(KP.dbp.globalScale)
-		end
 		if not KP.inCombat then
 			if Virtual:IsShown() then
 				if KP.dbp.healthBar_border == "KhalPlates" then
@@ -453,10 +449,11 @@ function KP:MoveAllVisiblePlates(diffX, diffY)
 end
 
 function KP:UpdateLevelFilter()
-	for _, Virtual in pairs(PlatesVisible) do
+	for Plate, Virtual in pairs(PlatesVisible) do
 		local name = Virtual.nameString
-		local totemTex = KP.TotemTexs[name]
-		if totemTex then
+		local totemCheck = KP.dbp.TotemsCheck[KP.Totems[name]]
+		local npcKey = KP.NPCs[name]
+		if totemCheck or npcKey then
 			Virtual:Hide()
 		else
 			local level = tonumber(Virtual.levelText:GetText())
@@ -648,7 +645,7 @@ function KP:UpdateAllIcons()
 	end
 end
 
-function KP:UpdateAllTotemPlates()
+function KP:UpdateAllTotemIcons()
 	for Plate in pairs(VirtualPlates) do
 		local totemPlate = Plate.totemPlate
 		if totemPlate then
@@ -662,8 +659,10 @@ end
 function KP:UpdateClassIconsShown()
 	for Plate, Virtual in pairs(PlatesVisible) do
 		local name =  Virtual.nameString
+		local totemCheck = KP.dbp.TotemsCheck[KP.Totems[name]]
+		local npcKey = KP.NPCs[name]
 		Virtual.classIcon:Hide()
-		if not KP.TotemTexs[name] and KP.inPvPInstance then
+		if not (totemCheck or npcKey) and KP.inPvPInstance then
 			local class = Virtual.classKey
 			if class then
 				if class == "FRIENDLY" and KP.dbp.showClassOnFriends then
@@ -699,6 +698,46 @@ function KP:UpdateClassColorNames()
 	end
 end
 
+function KP:UpdateAllTotemPlates()
+	for Plate, Virtual in pairs(PlatesVisible) do
+		if Plate.totemPlate then Plate.totemPlate:Hide() end
+		Plate.totemPlateIsShown = nil
+		Virtual:Show()
+		local name = Virtual.nameString
+		local totemKey = KP.Totems[name]
+		local totemCheck = KP.dbp.TotemsCheck[totemKey]
+		local npcKey = KP.NPCs[name]
+		if totemCheck or npcKey then
+			if not Plate.totemPlate then
+				SetupTotemPlate(Plate)
+			end
+			Virtual:Hide()
+			local textureKey = (totemCheck == 1 and totemKey) or (npcKey ~= "" and npcKey)
+			if textureKey then
+				Plate.totemPlate:Show()
+				Plate.totemPlate.icon:SetTexture(ASSETS .. "Icons\\" .. textureKey)
+				Plate.totemPlateIsShown = true
+			end
+		else
+			local level = tonumber(Virtual.levelText:GetText())
+			if level and level < KP.dbp.levelFilter then
+				Virtual:Hide()
+			end
+		end
+		if not KP.inCombat then
+			if Virtual:IsShown() then
+				if KP.dbp.healthBar_border == "KhalPlates" then
+					Plate:SetSize(NP_WIDTH * KP.dbp.globalScale * 0.9, NP_HEIGHT * KP.dbp.globalScale * 0.7)
+				else
+					Plate:SetSize(NP_WIDTH * KP.dbp.globalScale, NP_HEIGHT * KP.dbp.globalScale)
+				end
+			else
+				Plate:SetSize(0.01, 0.01)
+			end
+		end
+	end
+end
+
 function KP:UpdateProfile()
 	self:UpdateAllVirtualsScale()
 	self:UpdateLevelFilter()
@@ -709,9 +748,10 @@ function KP:UpdateProfile()
 	self:UpdateAllCastBars()
 	self:UpdateAllGlows()
 	self:UpdateAllIcons()
-	self:UpdateAllTotemPlates()
+	self:UpdateAllTotemIcons()
 	self:UpdateClassIconsShown()
 	self:UpdateClassColorNames()
+	self:UpdateAllTotemPlates()
 end
 
 ----------- Reference for Core.lua -----------
