@@ -26,7 +26,7 @@ local ClassByKey = {
 	[004386] = "SHAMAN",
 	[575078] = "WARLOCK",
 	[776042] = "WARRIOR",
-	[000099] = "FRIENDLY", -- identifies friendly players
+	[000099] = "FRIENDLY PLAYER",
 }
 
 SetCVar("ShowClassColorInNameplate", 1) -- "Class Colors in Nameplates" must be enabled to identify enemy players
@@ -36,6 +36,15 @@ local function ClassByPlateColor(healthBar)
 	local r, g, b = healthBar:GetStatusBarColor()
 	local key = floor(r * 100) * 10000 + floor(g * 100) * 100 + floor(b * 100)
 	return ClassByKey[key]
+end
+
+local function ReactionByPlateColor(healthBar)
+	local r, g, b = healthBar:GetStatusBarColor()
+	if r < 0.01 and ((g > 0.99 and b < 0.01) or (b > 0.99 and g < 0.01)) then
+		return "FRIENDLY"
+	else
+		return "ENEMY"
+	end
 end
 
 ------------------------- Customization Functions -------------------------
@@ -420,13 +429,13 @@ end
 ---------------------------------------- Settings Update Functions ----------------------------------------
 function KP:UpdateAllVirtualsScale()
 	for Plate, Virtual in pairs(VirtualPlates) do
-		Virtual:SetScale(KP.dbp.globalScale)
-		if not KP.inCombat then
+		Virtual:SetScale(self.dbp.globalScale)
+		if not self.inCombat then
 			if Virtual:IsShown() then
-				if KP.dbp.healthBar_border == "KhalPlates" then
-					Plate:SetSize(NP_WIDTH * KP.dbp.globalScale * 0.9, NP_HEIGHT * KP.dbp.globalScale * 0.7)
+				if self.dbp.healthBar_border == "KhalPlates" then
+					Plate:SetSize(NP_WIDTH * self.dbp.globalScale * 0.9, NP_HEIGHT * self.dbp.globalScale * 0.7)
 				else
-					Plate:SetSize(NP_WIDTH * KP.dbp.globalScale, NP_HEIGHT * KP.dbp.globalScale)
+					Plate:SetSize(NP_WIDTH * self.dbp.globalScale, NP_HEIGHT * self.dbp.globalScale)
 				end
 			else
 				Plate:SetSize(0.01, 0.01)
@@ -451,13 +460,13 @@ end
 function KP:UpdateLevelFilter()
 	for Plate, Virtual in pairs(PlatesVisible) do
 		local name = Virtual.nameString
-		local totemCheck = KP.dbp.TotemsCheck[KP.Totems[name]]
-		local npcIcon = KP.NPCs[name]
+		local totemCheck = self.dbp.TotemsCheck[self.Totems[name]]
+		local npcIcon = self.NPCs[name]
 		if totemCheck or npcIcon then
 			Virtual:Hide()
 		else
 			local level = tonumber(Virtual.levelText:GetText())
-			if level and level < KP.dbp.levelFilter then
+			if level and level < self.dbp.levelFilter then
 				Virtual:Hide()
 			else
 				Virtual:Show()
@@ -471,25 +480,25 @@ function KP:UpdateAllHealthBars()
 		local healthBar = Virtual.healthBar
 		local healthBarBorder = healthBar.healthBarBorder
 		local healthText = healthBar.healthText
-		if KP.dbp.healthBar_border == "KhalPlates" then
+		if self.dbp.healthBar_border == "KhalPlates" then
 			healthBarBorder:SetTexture(ASSETS .. "PlateBorders\\HealthBar-Border")
 		else
 			healthBarBorder:SetTexture("Interface\\Tooltips\\Nameplate-Border")
 		end
-		healthBarBorder:SetVertexColor(unpack(KP.dbp.healthBar_borderTint))
+		healthBarBorder:SetVertexColor(unpack(self.dbp.healthBar_borderTint))
 		if Virtual.classKey then
-			healthBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.healthBar_playerTex))
+			healthBar.barTex:SetTexture(self.LSM:Fetch("statusbar", self.dbp.healthBar_playerTex))
 		else
-			healthBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.healthBar_npcTex))
+			healthBar.barTex:SetTexture(self.LSM:Fetch("statusbar", self.dbp.healthBar_npcTex))
 		end
-		if KP.dbp.healthText_hide then
+		if self.dbp.healthText_hide then
 			healthText:Hide()
 		else
 			healthText:Show()
-			healthText:SetFont(KP.LSM:Fetch("font", KP.dbp.healthText_font), KP.dbp.healthText_size, KP.dbp.healthText_outline)
+			healthText:SetFont(self.LSM:Fetch("font", self.dbp.healthText_font), self.dbp.healthText_size, self.dbp.healthText_outline)
 			healthText:ClearAllPoints()
-			healthText:SetPoint(KP.dbp.healthText_anchor, KP.dbp.healthText_offsetX, KP.dbp.healthText_offsetY + 0.3)
-			healthText:SetTextColor(unpack(KP.dbp.healthText_color))
+			healthText:SetPoint(self.dbp.healthText_anchor, self.dbp.healthText_offsetX, self.dbp.healthText_offsetY + 0.3)
+			healthText:SetTextColor(unpack(self.dbp.healthText_color))
 		end
 	end
 end
@@ -497,16 +506,16 @@ end
 function KP:UpdateAllNameTexts()
 	for _, Virtual in pairs(VirtualPlates) do
 		local nameText = Virtual.healthBar.nameText
-		if KP.dbp.nameText_hide then
+		if self.dbp.nameText_hide then
 			nameText:Hide()
 		else
 			nameText:Show()
-			nameText:SetFont(KP.LSM:Fetch("font", KP.dbp.nameText_font), KP.dbp.nameText_size, KP.dbp.nameText_outline)
+			nameText:SetFont(self.LSM:Fetch("font", self.dbp.nameText_font), self.dbp.nameText_size, self.dbp.nameText_outline)
 			nameText:ClearAllPoints()
-			nameText:SetPoint(KP.dbp.nameText_anchor, KP.dbp.nameText_offsetX + 0.2, KP.dbp.nameText_offsetY + 0.7)
-			nameText:SetWidth(KP.dbp.nameText_width)
-			nameText:SetJustifyH(KP.dbp.nameText_anchor)
-			nameText:SetTextColor(unpack(KP.dbp.nameText_color))
+			nameText:SetPoint(self.dbp.nameText_anchor, self.dbp.nameText_offsetX + 0.2, self.dbp.nameText_offsetY + 0.7)
+			nameText:SetWidth(self.dbp.nameText_width)
+			nameText:SetJustifyH(self.dbp.nameText_anchor)
+			nameText:SetTextColor(unpack(self.dbp.nameText_color))
 		end
 	end
 end
@@ -514,26 +523,26 @@ end
 function KP:UpdateAllLevelTexts()
 	for _, Virtual in pairs(VirtualPlates) do
 		local levelText = Virtual.levelText
-		if KP.dbp.levelText_hide then
+		if self.dbp.levelText_hide then
 			levelText:Hide()
 		else
-			levelText:SetFont(KP.LSM:Fetch("font", KP.dbp.levelText_font), KP.dbp.levelText_size, KP.dbp.levelText_outline)
+			levelText:SetFont(self.LSM:Fetch("font", self.dbp.levelText_font), self.dbp.levelText_size, self.dbp.levelText_outline)
 			levelText:ClearAllPoints()
-			if KP.dbp.healthBar_border == "KhalPlates" then
-				if KP.dbp.levelText_anchor == "Left" then
-					levelText:SetPoint("CENTER", Virtual.healthBar, "LEFT", KP.dbp.levelText_offsetX - 10, KP.dbp.levelText_offsetY + 0.3)
-				elseif KP.dbp.levelText_anchor == "Center" then
-					levelText:SetPoint("CENTER", Virtual.healthBar, "CENTER", KP.dbp.levelText_offsetX, KP.dbp.levelText_offsetY + 0.3)
+			if self.dbp.healthBar_border == "KhalPlates" then
+				if self.dbp.levelText_anchor == "Left" then
+					levelText:SetPoint("CENTER", Virtual.healthBar, "LEFT", self.dbp.levelText_offsetX - 10, self.dbp.levelText_offsetY + 0.3)
+				elseif self.dbp.levelText_anchor == "Center" then
+					levelText:SetPoint("CENTER", Virtual.healthBar, "CENTER", self.dbp.levelText_offsetX, self.dbp.levelText_offsetY + 0.3)
 				else
-					levelText:SetPoint("CENTER", Virtual.healthBar, "RIGHT", KP.dbp.levelText_offsetX + 10, KP.dbp.levelText_offsetY + 0.3)
+					levelText:SetPoint("CENTER", Virtual.healthBar, "RIGHT", self.dbp.levelText_offsetX + 10, self.dbp.levelText_offsetY + 0.3)
 				end
 			else
-				if KP.dbp.levelText_anchor == "Left" then
-					levelText:SetPoint("CENTER", Virtual.healthBar, "LEFT", KP.dbp.levelText_offsetX - 13.5, KP.dbp.levelText_offsetY + 0.3)
-				elseif KP.dbp.levelText_anchor == "Center" then
-					levelText:SetPoint("CENTER", Virtual.healthBar, "CENTER", KP.dbp.levelText_offsetX + 11, KP.dbp.levelText_offsetY + 0.3)
+				if self.dbp.levelText_anchor == "Left" then
+					levelText:SetPoint("CENTER", Virtual.healthBar, "LEFT", self.dbp.levelText_offsetX - 13.5, self.dbp.levelText_offsetY + 0.3)
+				elseif self.dbp.levelText_anchor == "Center" then
+					levelText:SetPoint("CENTER", Virtual.healthBar, "CENTER", self.dbp.levelText_offsetX + 11, self.dbp.levelText_offsetY + 0.3)
 				else
-					levelText:SetPoint("CENTER", Virtual.healthBar, "RIGHT", KP.dbp.levelText_offsetX + 11.2, KP.dbp.levelText_offsetY + 0.3)
+					levelText:SetPoint("CENTER", Virtual.healthBar, "RIGHT", self.dbp.levelText_offsetX + 11.2, self.dbp.levelText_offsetY + 0.3)
 				end
 			end
 			levelText:Show()
@@ -545,12 +554,12 @@ function KP:UpdateAllCastBarBorders()
 	for _, Virtual in pairs(VirtualPlates) do
 		local castBarBorder = Virtual.castBarBorder
 		local shieldCastBarBorder = Virtual.shieldCastBarBorder
-		if KP.dbp.healthBar_border == "KhalPlates" then
-			castBarBorder:SetPoint("CENTER", KP.dbp.globalOffsetX, KP.dbp.globalOffsetY -19)
+		if self.dbp.healthBar_border == "KhalPlates" then
+			castBarBorder:SetPoint("CENTER", self.dbp.globalOffsetX, self.dbp.globalOffsetY -19)
 			castBarBorder:SetWidth(145)
 			shieldCastBarBorder:SetWidth(145)
 		else
-			castBarBorder:SetPoint("CENTER", KP.dbp.globalOffsetX + 10.5, KP.dbp.globalOffsetY -19)
+			castBarBorder:SetPoint("CENTER", self.dbp.globalOffsetX + 10.5, self.dbp.globalOffsetY -19)
 			castBarBorder:SetWidth(157)
 			shieldCastBarBorder:SetWidth(157)
 		end
@@ -560,18 +569,18 @@ end
 function KP:UpdateAllCastBars()
 	for _, Virtual in pairs(VirtualPlates) do
 		local castBar = Virtual.castBar
-		castBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.castBar_Tex))
-		if not KP.dbp.castText_hide then
+		castBar.barTex:SetTexture(self.LSM:Fetch("statusbar", self.dbp.castBar_Tex))
+		if not self.dbp.castText_hide then
 			local castText = castBar.castText
-			castText:SetFont(KP.LSM:Fetch("font", KP.dbp.castText_font), KP.dbp.castText_size, KP.dbp.castText_outline)
-			castText:SetTextColor(unpack(KP.dbp.castText_color))
-			castText:SetJustifyH(KP.dbp.castText_anchor)
-			castText:SetWidth(KP.dbp.castText_width)
+			castText:SetFont(self.LSM:Fetch("font", self.dbp.castText_font), self.dbp.castText_size, self.dbp.castText_outline)
+			castText:SetTextColor(unpack(self.dbp.castText_color))
+			castText:SetJustifyH(self.dbp.castText_anchor)
+			castText:SetWidth(self.dbp.castText_width)
 			castText:ClearAllPoints()
-			if KP.dbp.healthBar_border == "KhalPlates" then
-				castText:SetPoint(KP.dbp.castText_anchor, KP.dbp.castText_offsetX - 3.8, KP.dbp.castText_offsetY + 1.6)
+			if self.dbp.healthBar_border == "KhalPlates" then
+				castText:SetPoint(self.dbp.castText_anchor, self.dbp.castText_offsetX - 3.8, self.dbp.castText_offsetY + 1.6)
 			else
-				castText:SetPoint(KP.dbp.castText_anchor, KP.dbp.castText_offsetX - 9.3, KP.dbp.castText_offsetY + 1.6)
+				castText:SetPoint(self.dbp.castText_anchor, self.dbp.castText_offsetX - 9.3, self.dbp.castText_offsetY + 1.6)
 			end
 			if castBar:IsShown() then
 				castText:Show()
@@ -579,12 +588,12 @@ function KP:UpdateAllCastBars()
 		else
 			castBar.castText:Hide()
 		end
-		if not KP.dbp.castTimerText_hide then
+		if not self.dbp.castTimerText_hide then
 			local castTimerText = castBar.castTimerText
-			castTimerText:SetFont(KP.LSM:Fetch("font", KP.dbp.castTimerText_font), KP.dbp.castTimerText_size, KP.dbp.castTimerText_outline)
-			castTimerText:SetTextColor(unpack(KP.dbp.castTimerText_color))
+			castTimerText:SetFont(self.LSM:Fetch("font", self.dbp.castTimerText_font), self.dbp.castTimerText_size, self.dbp.castTimerText_outline)
+			castTimerText:SetTextColor(unpack(self.dbp.castTimerText_color))
 			castTimerText:ClearAllPoints()
-			castTimerText:SetPoint(KP.dbp.castTimerText_anchor, KP.dbp.castTimerText_offsetX - 2, KP.dbp.castTimerText_offsetY + 1)
+			castTimerText:SetPoint(self.dbp.castTimerText_anchor, self.dbp.castTimerText_offsetX - 2, self.dbp.castTimerText_offsetY + 1)
 			if castBar:IsShown() then
 				castTimerText:Show()
 			end
@@ -600,35 +609,35 @@ function KP:UpdateAllGlows()
 		local targetGlowTotem = Plate.totemPlate and Plate.totemPlate.targetGlow
 		local healthBarHighlight = Virtual.healthBarHighlight
 		local threatGlow = Virtual.threatGlow
-		targetGlow:SetVertexColor(unpack(KP.dbp.targetGlow_Tint))
-		healthBarHighlight:SetVertexColor(unpack(KP.dbp.mouseoverGlow_Tint))
+		targetGlow:SetVertexColor(unpack(self.dbp.targetGlow_Tint))
+		healthBarHighlight:SetVertexColor(unpack(self.dbp.mouseoverGlow_Tint))
 		healthBarHighlight:ClearAllPoints()
-		if KP.dbp.healthBar_border == "KhalPlates" then
+		if self.dbp.healthBar_border == "KhalPlates" then
 			targetGlow:SetTexture(ASSETS .. "PlateBorders\\HealthBar-TargetGlow")
-			targetGlow:SetSize(KP.NP_WIDTH, KP.NP_HEIGHT)
+			targetGlow:SetSize(self.NP_WIDTH, self.NP_HEIGHT)
 			targetGlow:SetPoint("CENTER", 0.7, 0.5)
 			healthBarHighlight:SetTexture(ASSETS .. "PlateBorders\\HealthBar-MouseoverGlow")
-			healthBarHighlight:SetSize(KP.NP_WIDTH, KP.NP_HEIGHT)
-			healthBarHighlight:SetPoint("CENTER", 1.2 + KP.dbp.globalOffsetX, -8.7 + KP.dbp.globalOffsetY)
+			healthBarHighlight:SetSize(self.NP_WIDTH, self.NP_HEIGHT)
+			healthBarHighlight:SetPoint("CENTER", 1.2 + self.dbp.globalOffsetX, -8.7 + self.dbp.globalOffsetY)
 			threatGlow:SetTexture(ASSETS .. "PlateBorders\\HealthBar-ThreatGlow")
 		else
 			targetGlow:SetTexture(ASSETS .. "PlateBorders\\HealthBar-TargetGlowBlizz")
-			targetGlow:SetSize(KP.NP_WIDTH * 1.165, KP.NP_HEIGHT)
+			targetGlow:SetSize(self.NP_WIDTH * 1.165, self.NP_HEIGHT)
 			targetGlow:SetPoint("CENTER", 11.33, 0.5)
 			healthBarHighlight:SetTexture(ASSETS .. "PlateBorders\\HealthBar-MouseoverGlowBlizz")
-			healthBarHighlight:SetSize(KP.NP_WIDTH * 1.165, KP.NP_HEIGHT)
-			healthBarHighlight:SetPoint("CENTER", 11.83 + KP.dbp.globalOffsetX, -8.7 + KP.dbp.globalOffsetY)
+			healthBarHighlight:SetSize(self.NP_WIDTH * 1.165, self.NP_HEIGHT)
+			healthBarHighlight:SetPoint("CENTER", 11.83 + self.dbp.globalOffsetX, -8.7 + self.dbp.globalOffsetY)
 			threatGlow:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash")
 		end
 		if targetGlowTotem then
-			targetGlowTotem:SetVertexColor(unpack(KP.dbp.targetGlow_Tint))
+			targetGlowTotem:SetVertexColor(unpack(self.dbp.targetGlow_Tint))
 		end
 	end
 end
 
 function KP:UpdateAllThreatGlows()
 	for _, Virtual in pairs(VirtualPlates) do
-		if KP.dbp.healthBar_border == "KhalPlates" then
+		if self.dbp.healthBar_border == "KhalPlates" then
 			Virtual.threatGlow:SetTexture(ASSETS .. "PlateBorders\\HealthBar-ThreatGlow")
 		else
 			Virtual.threatGlow:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash")
@@ -649,9 +658,9 @@ function KP:UpdateAllTotemIcons()
 	for Plate in pairs(VirtualPlates) do
 		local totemPlate = Plate.totemPlate
 		if totemPlate then
-			totemPlate:SetPoint("TOP", 0, KP.dbp.totemOffset - 5)
-			totemPlate:SetSize(KP.dbp.totemSize, KP.dbp.totemSize)
-			totemPlate.targetGlow:SetSize(128*KP.dbp.totemSize/88, 128*KP.dbp.totemSize/88)
+			totemPlate:SetPoint("TOP", 0, self.dbp.totemOffset - 5)
+			totemPlate:SetSize(self.dbp.totemSize, self.dbp.totemSize)
+			totemPlate.targetGlow:SetSize(128*self.dbp.totemSize/88, 128*self.dbp.totemSize/88)
 		end
 	end
 end
@@ -659,17 +668,17 @@ end
 function KP:UpdateClassIconsShown()
 	for Plate, Virtual in pairs(PlatesVisible) do
 		local name =  Virtual.nameString
-		local totemCheck = KP.dbp.TotemsCheck[KP.Totems[name]]
-		local npcIcon = KP.NPCs[name]
+		local totemCheck = self.dbp.TotemsCheck[self.Totems[name]]
+		local npcIcon = self.NPCs[name]
 		Virtual.classIcon:Hide()
-		if not (totemCheck or npcIcon) and KP.inPvPInstance then
+		if not (totemCheck or npcIcon) and self.inPvPInstance then
 			local class = Virtual.classKey
 			if class then
-				if class == "FRIENDLY" and KP.dbp.showClassOnFriends then
+				if class == "FRIENDLY PLAYER" and self.dbp.showClassOnFriends then
 					class = ClassByFriendName[name] or ""
 					Virtual.classIcon:SetTexture(ASSETS .. "Classes\\" .. class)
 					Virtual.classIcon:Show()
-				elseif class ~= "FRIENDLY" and KP.dbp.showClassOnEnemies then
+				elseif class ~= "FRIENDLY PLAYER" and self.dbp.showClassOnEnemies then
 					Virtual.classIcon:SetTexture(ASSETS .. "Classes\\" .. class)
 					Virtual.classIcon:Show()
 				end
@@ -683,13 +692,13 @@ function KP:UpdateClassColorNames()
 		local class = Virtual.classKey
 		local classColor
 		if class then
-			if class == "FRIENDLY" and ClassByFriendName[Virtual.nameString] and KP.dbp.nameText_classColorFriends then
+			if class == "FRIENDLY PLAYER" and ClassByFriendName[Virtual.nameString] and self.dbp.nameText_classColorFriends then
 				classColor = RAID_CLASS_COLORS[ClassByFriendName[Virtual.nameString]]
-			elseif class ~= "FRIENDLY" and KP.dbp.nameText_classColorEnemies then
+			elseif class ~= "FRIENDLY PLAYER" and self.dbp.nameText_classColorEnemies then
 				classColor = RAID_CLASS_COLORS[class]
 			end
 		end
-		Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB = unpack(KP.dbp.nameText_color)
+		Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB = unpack(self.dbp.nameText_color)
 		if classColor then
 			Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB = classColor.r, classColor.g, classColor.b
 		end
@@ -704,9 +713,9 @@ function KP:UpdateAllTotemPlates()
 		Plate.totemPlateIsShown = nil
 		Virtual:Show()
 		local name = Virtual.nameString
-		local totemKey = KP.Totems[name]
-		local totemCheck = KP.dbp.TotemsCheck[totemKey]
-		local npcIcon = KP.NPCs[name]
+		local totemKey = self.Totems[name]
+		local totemCheck = self.dbp.TotemsCheck[totemKey]
+		local npcIcon = self.NPCs[name]
 		if totemCheck or npcIcon then
 			if not Plate.totemPlate then
 				SetupTotemPlate(Plate)
@@ -720,21 +729,35 @@ function KP:UpdateAllTotemPlates()
 			end
 		else
 			local level = tonumber(Virtual.levelText:GetText())
-			if level and level < KP.dbp.levelFilter then
+			if level and level < self.dbp.levelFilter then
 				Virtual:Hide()
 			end
 		end
-		if not KP.inCombat then
+		if not self.inCombat then
 			if Virtual:IsShown() then
 				if KP.dbp.healthBar_border == "KhalPlates" then
-					Plate:SetSize(NP_WIDTH * KP.dbp.globalScale * 0.9, NP_HEIGHT * KP.dbp.globalScale * 0.7)
+					Plate:SetSize(NP_WIDTH * self.dbp.globalScale * 0.9, NP_HEIGHT * self.dbp.globalScale * 0.7)
 				else
-					Plate:SetSize(NP_WIDTH * KP.dbp.globalScale, NP_HEIGHT * KP.dbp.globalScale)
+					Plate:SetSize(NP_WIDTH * self.dbp.globalScale, NP_HEIGHT * self.dbp.globalScale)
 				end
 			else
 				Plate:SetSize(0.01, 0.01)
 			end
 		end
+	end
+end
+
+function KP:UpdateHitboxAttributes()
+	if not self.inCombat then
+		if self.dbp.healthBar_border == "KhalPlates" then
+			self.ResizeHitBox:SetAttribute("width", NP_WIDTH * self.dbp.globalScale * 0.9)
+			self.ResizeHitBox:SetAttribute("height", NP_HEIGHT * self.dbp.globalScale * 0.7)
+		else
+			self.ResizeHitBox:SetAttribute("width", NP_WIDTH * self.dbp.globalScale)
+			self.ResizeHitBox:SetAttribute("height", NP_HEIGHT * self.dbp.globalScale)
+		end
+	else
+		self.delayedHitboxUpdate = true
 	end
 end
 
@@ -752,6 +775,7 @@ function KP:UpdateProfile()
 	self:UpdateClassIconsShown()
 	self:UpdateClassColorNames()
 	self:UpdateAllTotemPlates()
+	self:UpdateHitboxAttributes()
 end
 
 ----------- Reference for Core.lua -----------
@@ -764,5 +788,6 @@ KP.NP_HEIGHT = NP_HEIGHT
 KP.ASSETS = ASSETS
 KP.UpdateTargetGlow = UpdateTargetGlow
 KP.ClassByPlateColor = ClassByPlateColor
+KP.ReactionByPlateColor = ReactionByPlateColor
 KP.SetupKhalPlate = SetupKhalPlate
 KP.SetupTotemPlate = SetupTotemPlate

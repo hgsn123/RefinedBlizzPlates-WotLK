@@ -11,6 +11,7 @@ KP.dbp.globalOffsetX = 0  -- Global offset X for nameplates
 KP.dbp.globalOffsetY = 21 -- Global offset Y for nameplates
 KP.dbp.globalScale = 1    -- Global scale for nameplates
 KP.dbp.levelFilter = 1    -- Minimum unit level to show its nameplate
+KP.dbp.friendlyClickthrough = false -- Disables hitbox on friendly nameplates
 -- Runtime references for previous values in profile changes
 KP.globalOffsetX = KP.dbp.globalOffsetX
 KP.globalOffsetY = KP.dbp.globalOffsetY
@@ -136,21 +137,13 @@ KP.MainOptionTable = {
 			name = "General",
 			type = "group",
 			args = {
-				blank1 = {
-					order = 1,
-					type = "description",
-					name = "",
-				},
+				lineBreak1 = {order = 1, type = "description", name = ""},
 				general_header = {
 					order = 2,
 					type = "header",
 					name = "General Settings",
 				},
-				blank2 = {
-					order = 3,
-					type = "description",
-					name = "",
-				},
+				lineBreak2 = {order = 3, type = "description", name = ""},
 				healthBar_border = {
 					order = 4,
 					type = "select",
@@ -247,57 +240,34 @@ KP.MainOptionTable = {
 						KP:UpdateAllCastBars()
 						KP:UpdateAllGlows()
 						KP:UpdateAllIcons()
+						KP:UpdateHitboxAttributes()
 						KP.globalOffsetX = KP.dbp.globalOffsetX
 					end,
 				},
-				blank3 = {
-					order = 5,
-					type = "description",
-					name = "",
-				},
-				blank4 = {
-					order = 6,
-					type = "description",
-					name = "",
-				},
-				blank5 = {
-					order = 7,
-					type = "description",
-					name = "",
-				},
+				lineBreak3 = {order = 5, type = "description", name = ""},
+				lineBreak4 = {order = 6, type = "description", name = ""},
+				lineBreak5 = {order = 7, type = "description", name = ""},
 				globalScale = {
 					order = 8,
 					type = "range",
 					name = "Global Scale",
-					desc = "Affects mainly the visual nameplate.\nThe hitbox can only be scaled out of combat, and it will restore its original size when hidden; so if shown during combat, it will scale once combat ends.",
 					min = 0.5,
 					max = 2.5,
 					step = 0.01,
 					set = function(info, val)
 						KP.dbp[info[#info]] = val
 						KP:UpdateAllVirtualsScale()
+						KP:UpdateHitboxAttributes()
 					end,
 				},
-				blank6 = {
-					order = 9,
-					type = "description",
-					name = "",
-				},
-				blank7 = {
-					order = 10,
-					type = "description",
-					name = "",
-				},
-				blank8 = {
-					order = 11,
-					type = "description",
-					name = "",
-				},
+				lineBreak6 = {order = 9, type = "description", name = ""},
+				lineBreak7 = {order = 10, type = "description", name = ""},
+				lineBreak8 = {order = 11, type = "description",	name = ""},
 				globalOffsetX = {
 					order = 12,
 					type = "range",
 					name = "Global Offset X",
-					desc = "Affects only the visual nameplate.\nThe real hitbox can't be moved.",
+					desc = "Affects only the visual nameplate.\nThe real hitbox can't be moved, just scaled.",
 					min = -50,
 					max = 50,
 					step = 1,
@@ -311,7 +281,7 @@ KP.MainOptionTable = {
 					order = 13,
 					type = "range",
 					name = "Global Offset Y",
-					desc = "Affects only the visual nameplate.\nThe real hitbox can't be moved.",
+					desc = "Affects only the visual nameplate.\nThe real hitbox can't be moved, just scaled.",
 					min = -50,
 					max = 50,
 					step = 1,
@@ -321,21 +291,9 @@ KP.MainOptionTable = {
 						KP.globalOffsetY = KP.dbp.globalOffsetY
 					end,
 				},
-				blank9 = {
-					order = 14,
-					type = "description",
-					name = "",
-				},
-				blank10 = {
-					order = 15,
-					type = "description",
-					name = "",
-				},
-				blank11 = {
-					order = 16,
-					type = "description",
-					name = "",
-				},
+				lineBreak9 = {order = 14, type = "description", name = ""},
+				lineBreak10 = {order = 15, type = "description", name = ""},
+				lineBreak11 = {order = 16, type = "description", name = ""},
 				levelFilter = {
 					order = 17,
 					type = "range",
@@ -349,6 +307,14 @@ KP.MainOptionTable = {
 						KP:UpdateLevelFilter()
 					end,
 				},
+				lineBreak12 = {order = 18, type = "description", name = ""},
+				lineBreak13 = {order = 19, type = "description", name = ""},
+				lineBreak14 = {order = 20, type = "description", name = ""},
+				friendlyClickthrough = {
+					order = 21,
+					type = "toggle",
+					name = "Clickthrough Friendly Plates",
+				},
 			},
 		},
 		tab2 = {
@@ -360,21 +326,13 @@ KP.MainOptionTable = {
 				KP:UpdateAllHealthBars()
 			end,
 			args = {
-				blank1 = {
-					order = 1,
-					type = "description",
-					name = "",
-				},
+				lineBreak1 = {order = 1, type = "description", name = ""},
 				healthBar_header = {
 					order = 2,
 					type = "header",
 					name = "Appearance",
 				},
-				blank2 = {
-					order = 3,
-					type = "description",
-					name = "",
-				},
+				lineBreak2 = {order = 3, type = "description", name = ""},
 				healthBar_playerTex = {
 					order = 4,
 					type = "select",
@@ -389,11 +347,7 @@ KP.MainOptionTable = {
 					dialogControl = "LSM30_Statusbar",
 					values = AceGUIWidgetLSMlists.statusbar,
 				},
-				blank3 = {
-					order = 6,
-					type = "description",
-					name = "",
-				},
+				lineBreak3 = {order = 6, type = "description", name = ""},
 				healthBar_borderTint = {
 					order = 7,
 					type = "color",
@@ -408,26 +362,14 @@ KP.MainOptionTable = {
 						KP:UpdateAllHealthBars()
 					end,
 				},
-				blank4 = {
-					order = 8,
-					type = "description",
-					name = "",
-				},
-				blank5 = {
-					order = 9,
-					type = "description",
-					name = "",
-				},
+				lineBreak4 = {order = 8, type = "description", name = ""},
+				lineBreak5 = {order = 9, type = "description", name = ""},
 				healthBarGlow_header = {
 					order = 10,
 					type = "header",
 					name = "Glows",
 				},
-				blank6 = {
-					order = 11,
-					type = "description",
-					name = "",
-				},
+				lineBreak6 = {order = 11, type = "description", name = ""},
 				targetGlow_Tint = {
 					order = 12,
 					type = "color",
@@ -456,26 +398,14 @@ KP.MainOptionTable = {
 						KP:UpdateAllGlows()
 					end,
 				},
-				blank7 = {
-					order = 14,
-					type = "description",
-					name = "",
-				},
-				blank8 = {
-					order = 15,
-					type = "description",
-					name = "",
-				},
+				lineBreak7 = {order = 14, type = "description", name = ""},
+				lineBreak8 = {order = 15, type = "description",	name = ""},
 				healthText_header = {
 					order = 16,
 					type = "header",
 					name = "Health Text",
 				},
-				blank9 = {
-					order = 17,
-					type = "description",
-					name = "",
-				},
+				lineBreak9 = {order = 17, type = "description", name = ""},
 				healthText_font = {
 					order = 18,
 					type = "select",
@@ -573,21 +503,13 @@ KP.MainOptionTable = {
 				KP:UpdateAllLevelTexts()
 			end,
 			args = {
-				blank1 = {
-					order = 1,
-					type = "description",
-					name = "",
-				},
+				lineBreak1 = {order = 1, type = "description", name = ""},
 				nameText_header = {
 					order = 2,
 					type = "header",
 					name = "Name Text",
 				},
-				blank2 = {
-					order = 3,
-					type = "description",
-					name = "",
-				},
+				lineBreak2 = {order = 3, type = "description", name = ""},
 				nameText_font = {
 					order = 4,
 					type = "select",
@@ -707,26 +629,14 @@ KP.MainOptionTable = {
 					type = "toggle",
 					name = "Hide Name Text",
 				},
-				blank3 = {
-					order = 15,
-					type = "description",
-					name = "",
-				},
-				blank4 = {
-					order = 16,
-					type = "description",
-					name = "",
-				},
+				lineBreak3 = {order = 15, type = "description", name = ""},
+				lineBreak4 = {order = 16, type = "description", name = ""},
 				levelText_header = {
 					order = 17,
 					type = "header",
 					name = "Level Text",
 				},
-				blank5 = {
-					order = 18,
-					type = "description",
-					name = "",
-				},
+				lineBreak5 = {order = 18, type = "description", name = ""},
 				levelText_font = {
 					order = 19,
 					type = "select",
@@ -809,21 +719,13 @@ KP.MainOptionTable = {
 				KP:UpdateAllCastBars()
 			end,
 			args = {
-				blank1 = {
-					order = 1,
-					type = "description",
-					name = "",
-				},
+				lineBreak1 = {order = 1, type = "description", name = ""},
 				castBar_header = {
 					order = 2,
 					type = "header",
 					name = "Appearance",
 				},
-				blank2 = {
-					order = 3,
-					type = "description",
-					name = "",
-				},
+				lineBreak2 = {order = 3, type = "description", name = ""},
 				castBar_Tex = {
 					order = 4,
 					type = "select",
@@ -831,26 +733,14 @@ KP.MainOptionTable = {
 					dialogControl = "LSM30_Statusbar",
 					values = AceGUIWidgetLSMlists.statusbar,
 				},
-				blank3 = {
-					order = 5,
-					type = "description",
-					name = "",
-				},
-				blank4 = {
-					order = 6,
-					type = "description",
-					name = "",
-				},
+				lineBreak3 = {order = 5, type = "description", name = ""},
+				lineBreak4 = {order = 6, type = "description", name = ""},
 				castText_header = {
 					order = 7,
 					type = "header",
 					name = "Cast Text",
 				},
-				blank5 = {
-					order = 8,
-					type = "description",
-					name = "",
-				},
+				lineBreak5 = {order = 8, type = "description", name = ""},
 				castText_font = {
 					order = 9,
 					type = "select",
@@ -945,26 +835,14 @@ KP.MainOptionTable = {
 					type = "toggle",
 					name = "Hide Cast Text",
 				},
-				blank6 = {
-					order = 18,
-					type = "description",
-					name = "",
-				},
-				blank7 = {
-					order = 19,
-					type = "description",
-					name = "",
-				},
+				lineBreak6 = {order = 18, type = "description", name = ""},
+				lineBreak7 = {order = 19, type = "description",	name = ""},
 				castTimerText_header = {
 					order = 20,
 					type = "header",
 					name = "Cast Timer Text",
 				},
-				blank8 = {
-					order = 21,
-					type = "description",
-					name = "",
-				},
+				lineBreak8 = {order = 21, type = "description", name = ""},
 				castTimerText_font = {
 					order = 22,
 					type = "select",
@@ -1061,21 +939,13 @@ KP.MainOptionTable = {
 				KP:UpdateAllIcons()
 			end,
 			args = {
-				blank1 = {
-					order = 1,
-					type = "description",
-					name = "",
-				},
+				lineBreak1 = {order = 1, type = "description", name = ""},
 				eliteIcon_header = {
 					order = 2,
 					type = "header",
 					name = "Elite Icon",
 				},
-				blank2 = {
-					order = 3,
-					type = "description",
-					name = "",
-				},
+				lineBreak2 = {order = 3, type = "description", name = ""},
 				eliteIcon_anchor = {
 					order = 4,
 					type = "select", 
@@ -1099,26 +969,14 @@ KP.MainOptionTable = {
 						KP:UpdateAllIcons()
 					end,
 				},
-				blank3 = {
-					order = 6,
-					type = "description",
-					name = "",
-				},
-				blank4 = {
-					order = 7,
-					type = "description",
-					name = "",
-				},
+				lineBreak3 = {order = 6, type = "description", name = ""},
+				lineBreak4 = {order = 7, type = "description", name = ""},
 				bossIcon_header = {
 					order = 8,
 					type = "header",
 					name = "Boss Icon",
 				},
-				blank5 = {
-					order = 9,
-					type = "description",
-					name = "",
-				},
+				lineBreak5 = {order = 9, type = "description", name = ""},
 				bossIcon_anchor = {
 					order = 10,
 					type = "select", 
@@ -1159,26 +1017,14 @@ KP.MainOptionTable = {
 					max = 35,
 					step = 0.1,
 				},
-				blank6 = {
-					order = 14,
-					type = "description",
-					name = "",
-				},
-				blank7 = {
-					order = 15,
-					type = "description",
-					name = "",
-				},
+				lineBreak6 = {order = 14, type = "description",	name = ""},
+				lineBreak7 = {order = 15, type = "description", name = ""},
 				raidTargetIcon_header = {
 					order = 16,
 					type = "header",
 					name = "Raid Target Icon",
 				},
-				blank8 = {
-					order = 17,
-					type = "description",
-					name = "",
-				},
+				lineBreak8 = {order = 17, type = "description",	name = ""},
 				raidTargetIcon_anchor = {
 					order = 18,
 					type = "select", 
@@ -1219,26 +1065,14 @@ KP.MainOptionTable = {
 					max = 50,
 					step = 0.1,
 				},
-				blank9 = {
-					order = 22,
-					type = "description",
-					name = "",
-				},
-				blank10 = {
-					order = 23,
-					type = "description",
-					name = "",
-				},
+				lineBreak9 = {order = 22, type = "description", name = ""},
+				lineBreak10 = {order = 23, type = "description", name = ""},
 				classIcon_header = {
 					order = 24,
 					type = "header",
 					name = "Class Icon",
 				},
-				blank11 = {
-					order = 25,
-					type = "description",
-					name = "",
-				},
+				lineBreak11 = {order = 25, type = "description", name = ""},
 				classIcon_anchor = {
 					order = 26,
 					type = "select", 
@@ -1299,26 +1133,14 @@ KP.MainOptionTable = {
 						KP:UpdateClassIconsShown()
 					end,
 				},
-				blank12 = {
-					order = 32,
-					type = "description",
-					name = "",
-				},
-				blank13 = {
-					order = 33,
-					type = "description",
-					name = "",
-				},
+				lineBreak12 = {order = 32, type = "description", name = ""},
+				lineBreak13 = {order = 33, type = "description", name = ""},
 				totemIcon_header = {
 					order = 34,
 					type = "header",
 					name = "Totem Icon",
 				},
-				blank14 = {
-					order = 35,
-					type = "description",
-					name = "",
-				},
+				lineBreak14 = {order = 35, type = "description", name = ""},
 				totemSize = {
 					order = 36,
 					type = "range",
@@ -1453,16 +1275,8 @@ for i, element in ipairs(TotemOrder) do
 					name = totemName,
 					order = 1,
 				},
-				blank1 = {
-					order = 2,
-					type = "description",
-					name = "",
-				},
-				blank2 = {
-					order = 3,
-					type = "description",
-					name = "",
-				},
+				lineBreak1 = {order = 2, type = "description", name = ""},
+				lineBreak2 = {order = 3, type = "description", name = ""},
 				desc = {
 					order = 4,
 					type = "description",
@@ -1471,21 +1285,9 @@ for i, element in ipairs(TotemOrder) do
 					imageWidth = 32,
 					imageHeight = 32,
 				},
-				blank3 = {
-					order = 5,
-					type = "description",
-					name = "",
-				},
-				blank4 = {
-					order = 6,
-					type = "description",
-					name = "",
-				},
-				blank5 = {
-					order = 7,
-					type = "description",
-					name = "",
-				},
+				lineBreak3 = {order = 5, type = "description", name = ""},
+				lineBreak4 = {order = 6, type = "description", name = ""},
+				lineBreak5 = {order = 7, type = "description", name = ""},
 				enable = {
 					type = "toggle",
 					name = "Enable TotemPlate",
@@ -1524,12 +1326,6 @@ KP.AboutTable = {
 	name = "About",
 	type = "group",
 	childGroups = "tab",
-	get = function(info)
-		return KP.dbp[info[#info]]
-	end,
-	set = function(info, v)
-		KP.dbp[info[#info]] = v
-	end,
 	args = (function()
 		local args = {}
 		local fields = {

@@ -6,8 +6,8 @@
 local AddonFile, KP = ...
 
 -- API
-local tonumber, select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitExists, IsInInstance, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS =
-      tonumber, select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitExists, IsInInstance, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS
+local tonumber, select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitExists, IsInInstance, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, ToggleFrame, UIPanelWindows =
+      tonumber, select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitExists, IsInInstance, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, ToggleFrame, UIPanelWindows
 
 -- Localized namespace definitions
 local VirtualPlates = KP.VirtualPlates
@@ -19,6 +19,7 @@ local NP_HEIGHT = KP.NP_HEIGHT
 local ASSETS = KP.ASSETS
 local UpdateTargetGlow = KP.UpdateTargetGlow
 local ClassByPlateColor = KP.ClassByPlateColor
+local ReactionByPlateColor = KP.ReactionByPlateColor
 local SetupKhalPlate = KP.SetupKhalPlate
 local SetupTotemPlate = KP.SetupTotemPlate
 
@@ -37,6 +38,82 @@ local GetParent = EventHandler.GetParent
 -- Status Flags
 KP.inCombat = false
 KP.inPvPInstance = false
+
+-- SecureHandlers System: Manages nameplate hitbox resizing while in combat
+local TriggerFrames = {}
+local ResizeHitBox = CreateFrame("Frame", "ResizeHitboxSecureHandler", UIParent, "SecureHandlerShowHideTemplate") 
+ResizeHitBox:SetFrameRef("WorldFrame", WorldFrame)
+SecureHandlerWrapScript(ResizeHitBox, "OnShow", ResizeHitBox,
+	[[
+	local WorldFrame = self:GetFrameRef("WorldFrame");
+	local height = self:GetAttribute("height")
+	local width = self:GetAttribute("width")
+	Plates = Plates or table.new()
+	for plate, shown in pairs(Plates) do
+		if shown and not plate:IsShown() then
+			Plates[plate] = nil
+		end
+	end
+	for i, nameplate in pairs(newtable(WorldFrame:GetChildren())) do
+		if nameplate:IsShown() and nameplate:IsProtected() and not Plates[nameplate] then
+			Plates[nameplate] = true
+			if WorldFrame:GetID() == 0 then
+				nameplate:SetWidth(width)
+				nameplate:SetHeight(height)
+			elseif WorldFrame:GetID() == 1 then
+				nameplate:SetWidth(0.01)
+				nameplate:SetHeight(0.01)
+			end
+		end
+	end
+	]]
+)
+TriggerFrames["ResizeHitboxSecureHandler"] = ResizeHitBox
+KP.ResizeHitBox = ResizeHitBox
+local function ExecuteHitboxSecureScript()
+    ToggleFrame(ResizeHitBox)
+	ToggleFrame(ResizeHitBox)
+end
+local SetWorldFrameID5 = CreateFrame("Frame", "SetWorldFrameID5SecureHandler", UIParent, "SecureHandlerShowHideTemplate") 
+SetWorldFrameID5:SetFrameRef("WorldFrame", WorldFrame)
+SecureHandlerWrapScript(SetWorldFrameID5, "OnShow", SetWorldFrameID5, [[local WorldFrame = self:GetFrameRef("WorldFrame"); WorldFrame:SetID(5)]])
+TriggerFrames["SetWorldFrameID5SecureHandler"] = SetWorldFrameID5
+local function InitPlatesHitboxes()
+	if WorldFrame:GetID() ~= 5 then
+		ToggleFrame(SetWorldFrameID5)
+		ToggleFrame(SetWorldFrameID5)
+	end
+end
+local SetWorldFrameID1 = CreateFrame("Frame", "SetWorldFrameID1SecureHandler", UIParent, "SecureHandlerShowHideTemplate") 
+SetWorldFrameID1:SetFrameRef("WorldFrame", WorldFrame)
+SecureHandlerWrapScript(SetWorldFrameID1, "OnShow", SetWorldFrameID1, [[local WorldFrame = self:GetFrameRef("WorldFrame"); WorldFrame:SetID(1)]])
+TriggerFrames["SetWorldFrameID1SecureHandler"] = SetWorldFrameID1
+local function NullifyPlateHitbox()
+	if WorldFrame:GetID() ~= 1 then
+		ToggleFrame(SetWorldFrameID1)
+		ToggleFrame(SetWorldFrameID1)
+	end
+end
+local SetWorldFrameID0 = CreateFrame("Frame", "SetWorldFrameID0SecureHandler", UIParent, "SecureHandlerShowHideTemplate") 
+SetWorldFrameID0:SetFrameRef("WorldFrame", WorldFrame)
+SecureHandlerWrapScript(SetWorldFrameID0, "OnShow", SetWorldFrameID0, [[local WorldFrame = self:GetFrameRef("WorldFrame"); WorldFrame:SetID(0)]])
+TriggerFrames["SetWorldFrameID0SecureHandler"] = SetWorldFrameID0
+local function NormalizePlateHitbox()
+	if WorldFrame:GetID() ~= 0 then
+		ToggleFrame(SetWorldFrameID0)
+		ToggleFrame(SetWorldFrameID0)
+	end
+end
+for name, frame in pairs(TriggerFrames) do
+    if not UIPanelWindows[name] or true then   
+        UIPanelWindows[name] = {area = "left", pushable = 8, whileDead = 1}
+        frame:SetAttribute("UIPanelLayout-defined", true)
+        for attribute, value in pairs(UIPanelWindows[name]) do
+            frame:SetAttribute("UIPanelLayout-"..attribute, value)
+        end
+        frame:SetAttribute("UIPanelLayout-enabled", true)
+    end
+end
 
 -- Plate handling and updating	
 do
@@ -69,14 +146,15 @@ do
 		Virtual.nameString = Virtual.nameText:GetText()
 		local name = Virtual.nameString
 		local healthBar = Virtual.healthBar
+		local isFriendly = ReactionByPlateColor(healthBar) == "FRIENDLY"
 		Virtual.classKey = ClassByPlateColor(healthBar)
 		local class = Virtual.classKey
 		local classColor	
 		if class then
 			healthBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.healthBar_playerTex))
-			if class == "FRIENDLY" and ClassByFriendName[name] and KP.dbp.nameText_classColorFriends then
+			if class == "FRIENDLY PLAYER" and ClassByFriendName[name] and KP.dbp.nameText_classColorFriends then
 				classColor = RAID_CLASS_COLORS[ClassByFriendName[name]]
-			elseif class ~= "FRIENDLY" and KP.dbp.nameText_classColorEnemies then
+			elseif class ~= "FRIENDLY PLAYER" and KP.dbp.nameText_classColorEnemies then
 				classColor = RAID_CLASS_COLORS[class]
 			end
 		else
@@ -111,25 +189,33 @@ do
 				Virtual:Hide() -- Hide low level nameplates
 			elseif class and KP.inPvPInstance then
 				--------------- Show class icons in PvP instances --------------
-				if class == "FRIENDLY" and KP.dbp.showClassOnFriends then
+				if class == "FRIENDLY PLAYER" and KP.dbp.showClassOnFriends then
 					class = ClassByFriendName[name] or ""
 					Virtual.classIcon:SetTexture(ASSETS .. "Classes\\" .. class)
 					Virtual.classIcon:Show()
-				elseif class ~= "FRIENDLY" and KP.dbp.showClassOnEnemies then
+				elseif class ~= "FRIENDLY PLAYER" and KP.dbp.showClassOnEnemies then
 					Virtual.classIcon:SetTexture(ASSETS .. "Classes\\" .. class)
 					Virtual.classIcon:Show()
 				end
 			end	
 		end
-		if not KP.inCombat then
-			if Virtual:IsShown() then
+
+ 		if KP.inCombat then
+			if not Virtual:IsShown() or (isFriendly and KP.dbp.friendlyClickthrough) then
+				NullifyPlateHitbox()
+			else
+				NormalizePlateHitbox()
+			end
+			ExecuteHitboxSecureScript()
+		else
+			if not Virtual:IsShown() or (isFriendly and KP.dbp.friendlyClickthrough) then
+				Plate:SetSize(0.01, 0.01)
+			else
 				if KP.dbp.healthBar_border == "KhalPlates" then
 					Plate:SetSize(NP_WIDTH * KP.dbp.globalScale * 0.9, NP_HEIGHT * KP.dbp.globalScale * 0.7)
 				else
 					Plate:SetSize(NP_WIDTH * KP.dbp.globalScale, NP_HEIGHT * KP.dbp.globalScale)
 				end
-			else
-				Plate:SetSize(0.01, 0.01)
 			end
 		end
 	end
@@ -141,9 +227,12 @@ do
 		Virtual.classIcon:Hide()
 		Virtual.nameString = nil
 		Virtual.classKey = nil
-		Virtual:Hide(); -- Explicitly hide so IsShown returns false.
+		Virtual:Hide() -- Explicitly hide so IsShown returns false.
 		if Plate.totemPlate then Plate.totemPlate:Hide() end
 		Plate.totemPlateIsShown = nil
+		if KP.inCombat then
+			ExecuteHitboxSecureScript()
+		end
 	end
 
 	--- Subroutine for table.sort to depth-sort plate virtuals.
@@ -259,7 +348,7 @@ do
 		for Key, Value in pairs(PlateOverrides) do
 			Virtual[Key] = Value
 		end
-		
+
 		SetupKhalPlate(Virtual)
 		--SetupHitboxTexture(Plate)
 
@@ -410,6 +499,14 @@ function KP:Initialize()
 	self.globalOffsetX = self.dbp.globalOffsetX
 	self.globalOffsetY = self.dbp.globalOffsetY
 
+	if self.dbp.healthBar_border == "KhalPlates" then
+		ResizeHitBox:SetAttribute("width", NP_WIDTH * self.dbp.globalScale * 0.9)
+		ResizeHitBox:SetAttribute("height", NP_HEIGHT * self.dbp.globalScale * 0.7)
+	else
+		ResizeHitBox:SetAttribute("width", NP_WIDTH * self.dbp.globalScale)
+		ResizeHitBox:SetAttribute("height", NP_HEIGHT * self.dbp.globalScale)
+	end
+
 	local config = LibStub("AceConfig-3.0")
 	local dialog = LibStub("AceConfigDialog-3.0")
 	config:RegisterOptionsTable("KhalPlates", self.MainOptionTable)
@@ -437,21 +534,22 @@ end
 
 function EventHandler:PLAYER_REGEN_ENABLED()
 	KP.inCombat = false
-	for Plate, Virtual in pairs(PlatesVisible) do
-		if Virtual:IsShown() then
-			if KP.dbp.healthBar_border == "KhalPlates" then
-				Plate:SetSize(NP_WIDTH * KP.dbp.globalScale * 0.9, NP_HEIGHT * KP.dbp.globalScale * 0.7)
-			else
-				Plate:SetSize(NP_WIDTH * KP.dbp.globalScale, NP_HEIGHT * KP.dbp.globalScale)
-			end
+	if KP.delayedHitboxUpdate then
+		KP.delayedHitboxUpdate = false
+		if KP.dbp.healthBar_border == "KhalPlates" then
+			ResizeHitBox:SetAttribute("width", NP_WIDTH * KP.dbp.globalScale * 0.9)
+			ResizeHitBox:SetAttribute("height", NP_HEIGHT * KP.dbp.globalScale * 0.7)
 		else
-			Plate:SetSize(0.01, 0.01)
+			ResizeHitBox:SetAttribute("width", NP_WIDTH * KP.dbp.globalScale)
+			ResizeHitBox:SetAttribute("height", NP_HEIGHT * KP.dbp.globalScale)
 		end
-	end 
+	end
 end
 
 function EventHandler:PLAYER_REGEN_DISABLED()
 	KP.inCombat = true
+	InitPlatesHitboxes()
+	ExecuteHitboxSecureScript()
 end
 
 function EventHandler:PLAYER_TARGET_CHANGED()
