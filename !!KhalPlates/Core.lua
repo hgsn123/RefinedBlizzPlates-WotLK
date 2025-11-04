@@ -37,6 +37,7 @@ local GetParent = EventHandler.GetParent
 
 -- Status Flags
 KP.inCombat = false
+KP.inInstance = false
 KP.inPvPInstance = false
 
 -- SecureHandlers System: Manages nameplate hitbox resizing while in combat
@@ -201,14 +202,14 @@ do
 		end
 
  		if KP.inCombat then
-			if not Virtual:IsShown() or (isFriendly and KP.dbp.friendlyClickthrough) then
+			if not Virtual:IsShown() or (isFriendly and KP.dbp.friendlyClickthrough and KP.inInstance) then
 				NullifyPlateHitbox()
 			else
 				NormalizePlateHitbox()
 			end
 			ExecuteHitboxSecureScript()
 		else
-			if not Virtual:IsShown() or (isFriendly and KP.dbp.friendlyClickthrough) then
+			if not Virtual:IsShown() or (isFriendly and KP.dbp.friendlyClickthrough and KP.inInstance) then
 				Plate:SetSize(0.01, 0.01)
 			else
 				if KP.dbp.healthBar_border == "KhalPlates" then
@@ -570,7 +571,8 @@ local function UpdateClassByFriendName()
 end
 
 function EventHandler:PLAYER_ENTERING_WORLD()
-	local _, instanceType = IsInInstance()
+	local inInstance, instanceType = IsInInstance()
+	KP.inInstance = inInstance == 1
 	UpdateClassByFriendName()
 	if instanceType == "pvp" or instanceType == "arena" then
 		KP.inPvPInstance = true	

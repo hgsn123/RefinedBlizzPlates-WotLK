@@ -313,7 +313,8 @@ KP.MainOptionTable = {
 				friendlyClickthrough = {
 					order = 21,
 					type = "toggle",
-					name = "Clickthrough Friendly Plates",
+					name = "Clickthrough Friendly Nameplates",
+					desc = "Disables friendly nameplates hitboxes inside PvE and PvP instances",
 				},
 			},
 		},
