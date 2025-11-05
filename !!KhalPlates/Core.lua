@@ -171,13 +171,13 @@ do
 		------------------------ TotemPlates Handling ------------------------
 		local totemKey = KP.Totems[name]
 		local totemCheck = KP.dbp.TotemsCheck[totemKey]
-		local npcIcon = KP.NPCs[name]
-		if totemCheck or npcIcon then
+		local blacklisted = KP.dbp.Blacklist[name]
+		if totemCheck or blacklisted then
 			if not Plate.totemPlate then
 				SetupTotemPlate(Plate) -- Setup TotemPlate on the fly
 			end
 			Virtual:Hide()
-			local iconTexture = (totemCheck == 1 and ASSETS .. "Icons\\" .. totemKey) or (npcIcon ~= "" and npcIcon)
+			local iconTexture = (totemCheck == 1 and ASSETS .. "Icons\\" .. totemKey) or (blacklisted ~= "" and blacklisted)
 			if iconTexture then
 				Plate.totemPlate:Show()
 				Plate.totemPlate.icon:SetTexture(iconTexture)
@@ -499,6 +499,8 @@ function KP:Initialize()
 	self.dbp = self.db.profile -- Replace default profile with AceDB profile
 	self.globalOffsetX = self.dbp.globalOffsetX
 	self.globalOffsetY = self.dbp.globalOffsetY
+
+	KP:BuildBlacklistUI()
 
 	if self.dbp.healthBar_border == "KhalPlates" then
 		ResizeHitBox:SetAttribute("width", NP_WIDTH * self.dbp.globalScale * 0.9)

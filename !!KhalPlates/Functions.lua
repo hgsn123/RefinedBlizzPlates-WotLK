@@ -461,8 +461,8 @@ function KP:UpdateLevelFilter()
 	for Plate, Virtual in pairs(PlatesVisible) do
 		local name = Virtual.nameString
 		local totemCheck = self.dbp.TotemsCheck[self.Totems[name]]
-		local npcIcon = self.NPCs[name]
-		if totemCheck or npcIcon then
+		local blacklisted = self.dbp.Blacklist[name]
+		if totemCheck or blacklisted then
 			Virtual:Hide()
 		else
 			local level = tonumber(Virtual.levelText:GetText())
@@ -669,9 +669,9 @@ function KP:UpdateClassIconsShown()
 	for Plate, Virtual in pairs(PlatesVisible) do
 		local name =  Virtual.nameString
 		local totemCheck = self.dbp.TotemsCheck[self.Totems[name]]
-		local npcIcon = self.NPCs[name]
+		local blacklisted = self.dbp.Blacklist[name]
 		Virtual.classIcon:Hide()
-		if not (totemCheck or npcIcon) and self.inPvPInstance then
+		if not (totemCheck or blacklisted) and self.inPvPInstance then
 			local class = Virtual.classKey
 			if class then
 				if class == "FRIENDLY PLAYER" and self.dbp.showClassOnFriends then
@@ -715,13 +715,13 @@ function KP:UpdateAllTotemPlates()
 		local name = Virtual.nameString
 		local totemKey = self.Totems[name]
 		local totemCheck = self.dbp.TotemsCheck[totemKey]
-		local npcIcon = self.NPCs[name]
-		if totemCheck or npcIcon then
+		local blacklisted = self.dbp.Blacklist[name]
+		if totemCheck or blacklisted then
 			if not Plate.totemPlate then
 				SetupTotemPlate(Plate)
 			end
 			Virtual:Hide()
-			local iconTexture = (totemCheck == 1 and ASSETS .. "Icons\\" .. totemKey) or (npcIcon ~= "" and npcIcon)
+			local iconTexture = (totemCheck == 1 and ASSETS .. "Icons\\" .. totemKey) or (blacklisted ~= "" and blacklisted)
 			if iconTexture then
 				Plate.totemPlate:Show()
 				Plate.totemPlate.icon:SetTexture(iconTexture)
@@ -735,7 +735,7 @@ function KP:UpdateAllTotemPlates()
 		end
 		if not self.inCombat then
 			if Virtual:IsShown() then
-				if KP.dbp.healthBar_border == "KhalPlates" then
+				if self.dbp.healthBar_border == "KhalPlates" then
 					Plate:SetSize(NP_WIDTH * self.dbp.globalScale * 0.9, NP_HEIGHT * self.dbp.globalScale * 0.7)
 				else
 					Plate:SetSize(NP_WIDTH * self.dbp.globalScale, NP_HEIGHT * self.dbp.globalScale)
@@ -774,6 +774,7 @@ function KP:UpdateProfile()
 	self:UpdateAllTotemIcons()
 	self:UpdateClassIconsShown()
 	self:UpdateClassColorNames()
+	self:BuildBlacklistUI()
 	self:UpdateAllTotemPlates()
 	self:UpdateHitboxAttributes()
 end

@@ -119,6 +119,9 @@ KP.dbp.TotemsCheck = { -- 1 = Icon, 0 = Hiden, false = nameplate
 	["Strength of Earth Totem"] = 1,
 	["Totem of Wrath"] = 1,
 }
+-- Blacklist
+KP.dbp.Blacklist = CopyTable(KP.Blacklist)
+local tmpNewName = ""
 
 -------------------- Options Table --------------------
 KP.MainOptionTable = {
@@ -132,7 +135,7 @@ KP.MainOptionTable = {
         KP.dbp[info[#info]] = val
     end,
 	args = {
-		tab1 = {
+		General = {
 			order = 1,
 			name = "General",
 			type = "group",
@@ -313,190 +316,14 @@ KP.MainOptionTable = {
 				friendlyClickthrough = {
 					order = 21,
 					type = "toggle",
-					name = "Clickthrough Friendly Nameplates",
+					name = "Click-through Friendly Nameplates",
 					desc = "Disables friendly nameplates hitboxes inside PvE and PvP instances",
 				},
 			},
 		},
-		tab2 = {
+		Text = {
 			order = 2,
-			name = "Health Bar",
-			type = "group",
-			set = function(info, val)
-				KP.dbp[info[#info]] = val
-				KP:UpdateAllHealthBars()
-			end,
-			args = {
-				lineBreak1 = {order = 1, type = "description", name = ""},
-				healthBar_header = {
-					order = 2,
-					type = "header",
-					name = "Appearance",
-				},
-				lineBreak2 = {order = 3, type = "description", name = ""},
-				healthBar_playerTex = {
-					order = 4,
-					type = "select",
-					name = "Player Bar Texture",
-					dialogControl = "LSM30_Statusbar",
-					values = AceGUIWidgetLSMlists.statusbar,
-				},			
-				healthBar_npcTex = {
-					order = 5,
-					type = "select",
-					name = "NPC Bar Texture",
-					dialogControl = "LSM30_Statusbar",
-					values = AceGUIWidgetLSMlists.statusbar,
-				},
-				lineBreak3 = {order = 6, type = "description", name = ""},
-				healthBar_borderTint = {
-					order = 7,
-					type = "color",
-					name = "Border Tint",
-					desc = "This is a tint overlay, not a regular color. 'White' keeps the original look.",
-					get = function(info)
-						local c = KP.dbp[info[#info]]
-						return c[1], c[2], c[3]
-					end,
-					set = function(info, r, g, b)
-						KP.dbp[info[#info]] = {r, g, b}
-						KP:UpdateAllHealthBars()
-					end,
-				},
-				lineBreak4 = {order = 8, type = "description", name = ""},
-				lineBreak5 = {order = 9, type = "description", name = ""},
-				healthBarGlow_header = {
-					order = 10,
-					type = "header",
-					name = "Glows",
-				},
-				lineBreak6 = {order = 11, type = "description", name = ""},
-				targetGlow_Tint = {
-					order = 12,
-					type = "color",
-					name = "Target Glow Tint",
-					desc = "This is a tint overlay, not a regular color. 'White' keeps the original look.",
-					get = function(info)
-						local c = KP.dbp[info[#info]]
-						return c[1], c[2], c[3]
-					end,
-					set = function(info, r, g, b)
-						KP.dbp[info[#info]] = {r, g, b}
-						KP:UpdateAllGlows()
-					end,
-				},
-				mouseoverGlow_Tint = {
-					order = 13,
-					type = "color",
-					name = "Mouseover Glow Tint",
-					desc = "This is a tint overlay, not a regular color. 'White' keeps the original look.",
-					get = function(info)
-						local c = KP.dbp[info[#info]]
-						return c[1], c[2], c[3]
-					end,
-					set = function(info, r, g, b)
-						KP.dbp[info[#info]] = {r, g, b}
-						KP:UpdateAllGlows()
-					end,
-				},
-				lineBreak7 = {order = 14, type = "description", name = ""},
-				lineBreak8 = {order = 15, type = "description",	name = ""},
-				healthText_header = {
-					order = 16,
-					type = "header",
-					name = "Health Text",
-				},
-				lineBreak9 = {order = 17, type = "description", name = ""},
-				healthText_font = {
-					order = 18,
-					type = "select",
-					name = "Text Font",
-					values = KP.LSM:HashTable("font"),
-					dialogControl = "LSM30_Font",
-					disabled = function() return KP.dbp.healthText_hide end
-				},
-				healthText_size = {
-					order = 19,
-					type = "range",
-					name = "Font Size",
-					min = 6,
-					max = 18,
-					step = 0.1,
-					disabled = function() return KP.dbp.healthText_hide end
-				},
-				healthText_outline = {
-					order = 20,
-					type = "select", 
-					name = "Outline",
-					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
-					},
-					disabled = function() return KP.dbp.healthText_hide end
-				},
-				healthText_anchor = {
-					order = 21,
-					type = "select", 
-					name = "Anchor",
-					values = {
-						["LEFT"] = "Left",
-						["CENTER"] = "Center",
-						["RIGHT"] = "Right"
-					},
-					set = function(info, val)
-						KP.dbp[info[#info]] = val
-						KP.dbp.healthText_offsetX = 0
-						KP.dbp.healthText_offsetY = 0
-						KP:UpdateAllHealthBars()
-					end,
-					disabled = function() return KP.dbp.healthText_hide end
-				},
-				healthText_offsetX = {
-					order = 22,
-					type = "range",
-					name = "Offset X",
-					min = -50,
-					max = 50,
-					step = 0.1,
-					disabled = function() return KP.dbp.healthText_hide end
-				},
-				healthText_offsetY = {
-					order = 23,
-					type = "range",
-					name = "Offset Y",
-					min = -50,
-					max = 50,
-					step = 0.1,
-					disabled = function() return KP.dbp.healthText_hide end
-				},
-				healthText_color = {
-					order = 24,
-					type = "color",
-					name = "Text Color",
-					get = function(info)
-						local c = KP.dbp[info[#info]]
-						return c[1], c[2], c[3]
-					end,
-					set = function(info, r, g, b)
-						KP.dbp[info[#info]] = {r, g, b}
-						KP:UpdateAllHealthBars()
-					end,
-					disabled = function() return KP.dbp.healthText_hide end
-				},
-				healthText_hide = {
-					order = 25,
-					type = "toggle",
-					name = "Hide Health Text",
-				},
-			},
-		},
-		tab3 = {
-			order = 3,
-			name = "Name/Level",
+			name = "Text",
 			type = "group",
 			set = function(info, val)
 				KP.dbp[info[#info]] = val
@@ -711,7 +538,183 @@ KP.MainOptionTable = {
 				},
 			},
 		},
-		tab4 = {
+		HealthBar = {
+			order = 3,
+			name = "Health Bar",
+			type = "group",
+			set = function(info, val)
+				KP.dbp[info[#info]] = val
+				KP:UpdateAllHealthBars()
+			end,
+			args = {
+				lineBreak1 = {order = 1, type = "description", name = ""},
+				healthBar_header = {
+					order = 2,
+					type = "header",
+					name = "Appearance",
+				},
+				lineBreak2 = {order = 3, type = "description", name = ""},
+				healthBar_playerTex = {
+					order = 4,
+					type = "select",
+					name = "Player Bar Texture",
+					dialogControl = "LSM30_Statusbar",
+					values = AceGUIWidgetLSMlists.statusbar,
+				},			
+				healthBar_npcTex = {
+					order = 5,
+					type = "select",
+					name = "NPC Bar Texture",
+					dialogControl = "LSM30_Statusbar",
+					values = AceGUIWidgetLSMlists.statusbar,
+				},
+				lineBreak3 = {order = 6, type = "description", name = ""},
+				healthBar_borderTint = {
+					order = 7,
+					type = "color",
+					name = "Border Tint",
+					desc = "This is a tint overlay, not a regular color. 'White' keeps the original look.",
+					get = function(info)
+						local c = KP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						KP.dbp[info[#info]] = {r, g, b}
+						KP:UpdateAllHealthBars()
+					end,
+				},
+				lineBreak4 = {order = 8, type = "description", name = ""},
+				lineBreak5 = {order = 9, type = "description", name = ""},
+				healthBarGlow_header = {
+					order = 10,
+					type = "header",
+					name = "Glows",
+				},
+				lineBreak6 = {order = 11, type = "description", name = ""},
+				targetGlow_Tint = {
+					order = 12,
+					type = "color",
+					name = "Target Glow Tint",
+					desc = "This is a tint overlay, not a regular color. 'White' keeps the original look.",
+					get = function(info)
+						local c = KP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						KP.dbp[info[#info]] = {r, g, b}
+						KP:UpdateAllGlows()
+					end,
+				},
+				mouseoverGlow_Tint = {
+					order = 13,
+					type = "color",
+					name = "Mouseover Glow Tint",
+					desc = "This is a tint overlay, not a regular color. 'White' keeps the original look.",
+					get = function(info)
+						local c = KP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						KP.dbp[info[#info]] = {r, g, b}
+						KP:UpdateAllGlows()
+					end,
+				},
+				lineBreak7 = {order = 14, type = "description", name = ""},
+				lineBreak8 = {order = 15, type = "description",	name = ""},
+				healthText_header = {
+					order = 16,
+					type = "header",
+					name = "Health Text",
+				},
+				lineBreak9 = {order = 17, type = "description", name = ""},
+				healthText_font = {
+					order = 18,
+					type = "select",
+					name = "Text Font",
+					values = KP.LSM:HashTable("font"),
+					dialogControl = "LSM30_Font",
+					disabled = function() return KP.dbp.healthText_hide end
+				},
+				healthText_size = {
+					order = 19,
+					type = "range",
+					name = "Font Size",
+					min = 6,
+					max = 18,
+					step = 0.1,
+					disabled = function() return KP.dbp.healthText_hide end
+				},
+				healthText_outline = {
+					order = 20,
+					type = "select", 
+					name = "Outline",
+					values = {
+						[""] = "None",
+						["OUTLINE"] = "Outline",
+						["THICKOUTLINE"] = "Thick Outline",
+						["MONOCHROME"] = "Monochrome",
+						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
+						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+					},
+					disabled = function() return KP.dbp.healthText_hide end
+				},
+				healthText_anchor = {
+					order = 21,
+					type = "select", 
+					name = "Anchor",
+					values = {
+						["LEFT"] = "Left",
+						["CENTER"] = "Center",
+						["RIGHT"] = "Right"
+					},
+					set = function(info, val)
+						KP.dbp[info[#info]] = val
+						KP.dbp.healthText_offsetX = 0
+						KP.dbp.healthText_offsetY = 0
+						KP:UpdateAllHealthBars()
+					end,
+					disabled = function() return KP.dbp.healthText_hide end
+				},
+				healthText_offsetX = {
+					order = 22,
+					type = "range",
+					name = "Offset X",
+					min = -50,
+					max = 50,
+					step = 0.1,
+					disabled = function() return KP.dbp.healthText_hide end
+				},
+				healthText_offsetY = {
+					order = 23,
+					type = "range",
+					name = "Offset Y",
+					min = -50,
+					max = 50,
+					step = 0.1,
+					disabled = function() return KP.dbp.healthText_hide end
+				},
+				healthText_color = {
+					order = 24,
+					type = "color",
+					name = "Text Color",
+					get = function(info)
+						local c = KP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						KP.dbp[info[#info]] = {r, g, b}
+						KP:UpdateAllHealthBars()
+					end,
+					disabled = function() return KP.dbp.healthText_hide end
+				},
+				healthText_hide = {
+					order = 25,
+					type = "toggle",
+					name = "Hide Health Text",
+				},
+			},
+		},
+		CastBar = {
 			order = 4,
 			name = "Cast Bar",
 			type = "group",
@@ -931,7 +934,7 @@ KP.MainOptionTable = {
 				},
 			},
 		},
-		tab5 = {
+		Icons = {
 			order = 5,
 			name = "Icons",
 			type = "group",
@@ -1168,11 +1171,70 @@ KP.MainOptionTable = {
 				},
 			},
 		},
-		tab6 = {
+		Totems = {
 			order = 6,
 			name = "Totems",
 			type = "group",
 			args = {}
+		},
+		BlackList = {
+			order = 7,
+			name = "Blacklist",
+			type = "group",
+			args = {
+				inputName = {
+					order = 1,
+					type = "input",
+					name = "Unit name",
+					desc = "Add the exact name of a unit whose nameplate you want to hide or replace with an icon. Blacklisted nameplates will always be click-through.",
+					get = function() return tmpNewName end,
+					set = function(_, val) tmpNewName = val end,
+				},
+				targetName = {
+					order = 2,
+					type = "execute",
+					name = "Set target name",
+					func = function()
+						local target = UnitName("target")
+						if target then 
+							tmpNewName = target
+						else
+							tmpNewName = ""
+						end
+					end,
+				},
+				addName = {
+					order = 3,
+					type = "execute",
+					name = "Add to blacklist",
+					func = function()
+						if tmpNewName == "" then return end
+						if not KP.dbp.Blacklist[tmpNewName] then
+							KP.dbp.Blacklist[tmpNewName] = ""
+							KP:BuildBlacklistUI()
+							KP:UpdateAllTotemPlates()
+							LibStub("AceConfigDialog-3.0"):SelectGroup("KhalPlates", "BlackList", tmpNewName)
+							tmpNewName = ""
+						else
+							tmpNewName = ""
+						end
+					end,
+				},
+				lineBreak = {order = 4, type = "description", name = ""},
+				resetList = {
+					order = 5,
+					type = "execute",
+					name = "Reset",
+					desc = "Restore the default blacklist",
+					confirm = true,
+					confirmText = "Are you sure you want to restore the default blacklist?",
+					func = function()
+						KP.dbp.Blacklist = CopyTable(KP.Blacklist)
+						KP:BuildBlacklistUI()
+						KP:UpdateAllTotemPlates()
+					end,
+				},
+			},
 		},
 	},
 }
@@ -1249,7 +1311,7 @@ tooltip:Show()
 tooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
 function KP:UpdateTotemDesc()
-	for name, group in pairs(KP.MainOptionTable.args.tab6.args) do
+	for name, group in pairs(KP.MainOptionTable.args.Totems.args) do
 		local spellID = TotemIDs[name]
 		if spellID then
 			tooltip:SetHyperlink("spell:" .. spellID)
@@ -1266,7 +1328,7 @@ for i, element in ipairs(TotemOrder) do
         local spellID = TotemIDs[name]
 		local totemName, _, icon = GetSpellInfo(spellID)
         local iconString = "\124T" .. icon .. ":26\124t"
-		KP.MainOptionTable.args.tab6.args[name] = {
+		KP.MainOptionTable.args.Totems.args[name] = {
 			type = "group",
 			name = iconString .. TotemTextColor[element] .. totemName .. "|r",
 			order = 10*i + j,
@@ -1321,6 +1383,77 @@ for i, element in ipairs(TotemOrder) do
 			},
 		}
 	end
+end
+
+function KP:BuildBlacklistUI()
+    local args = KP.MainOptionTable.args.BlackList.args
+	for k, v in pairs(args) do
+		if v.order > 5 then
+			args[k] = nil
+		end
+	end
+    local namesList = {}
+    for name, value in pairs(KP.dbp.Blacklist) do
+		if value then
+			table.insert(namesList, name)
+		end
+	end
+    table.sort(namesList, function(a, b) return a < b end)
+    for i, name in ipairs(namesList) do
+        local iconPath = KP.dbp.Blacklist[name]
+        args[name] = {
+            order = i + 5,
+            type = "group",
+            name = name,
+            args = {
+                header = {
+					order = 1,
+					type = "header", 
+					name = name, 
+				},
+                iconPath = {
+                    order = 2,
+                    type = "input",
+                    name = "Icon Path",
+					desc = "Enter the path to an icon texture to replace the nameplate, or leave it empty to hide it completely.",
+                    width = "full",
+                    get = function() return KP.dbp.Blacklist[name] end,
+                    set = function(_, val)
+                        KP.dbp.Blacklist[name] = val
+                        KP:BuildBlacklistUI()
+						KP:UpdateAllTotemPlates()
+                    end,
+                },
+				lineBreak1 = {order = 3, type = "description", name = ""},
+				lineBreak2 = {order = 4, type = "description", name = ""},
+                iconPreview = {
+                    order = 5,
+                    type = "description",
+                    name = "",
+                    image = iconPath ~= "" and iconPath or nil,
+                    imageWidth = 42,
+                    imageHeight = 42,
+                },
+				lineBreak3 = {order = 6, type = "description", name = ""},
+				lineBreak4 = {order = 7, type = "description", name = ""},
+				lineBreak5 = {order = 8, type = "description", name = ""},
+				lineBreak6 = {order = 9, type = "description", name = ""},
+                remove = {
+                    order = 10,
+                    type = "execute",
+                    name = "Remove",
+					desc = "Remove this unit from the blacklist",
+					confirm = true,
+					confirmText = "Are you sure you want to remove this unit from the blacklist?",
+                    func = function()
+                		KP.dbp.Blacklist[name] = false
+						KP:BuildBlacklistUI()
+						KP:UpdateAllTotemPlates()
+                    end,
+                },
+            },
+        }
+    end
 end
 
 KP.AboutTable = {
