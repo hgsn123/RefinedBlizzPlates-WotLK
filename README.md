@@ -5,7 +5,7 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 ## Features  
 - Blizzlike nameplates with adjustable visual parameters.
 - Nameplates drawing order based on distance to the camera.
-- Adjusted Z-order spacing to prevent subregions from overlapping between nameplates
+- Adjusted Z-order spacing to prevent subregions from overlapping between nameplates.
 - Custom glow for the target and mouseover nameplates.
 - Optional class icons in battlegrounds and arenas.
 - Displays arenaID and partyID numbers as optional text in arenas.
@@ -14,7 +14,8 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 - Added an option to replace friendly player nameplates with only the name and class icon.
 - Added click-through behavior for totems, blacklist and, optionally, friendly nameplates.
 
-
+For users of `Cheeta's Enhanced Stacking Nameplate` who wish to retain its functionality, a modified and simplified version compatible with KhalPlates is available here:
+https://wago.io/2-ARIJ4TY
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/KhalGH/KhalPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG2.jpg" 
