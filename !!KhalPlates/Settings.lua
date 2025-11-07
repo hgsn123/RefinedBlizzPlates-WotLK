@@ -115,12 +115,12 @@ KP.dbp.classPlate_textOutline = "OUTLINE"
 KP.dbp.classPlate_textColor = {1, 1, 1} -- white
 KP.dbp.classPlate_classColors = true
 KP.dbp.classPlate_showNameInBG = false
-KP.dbp.classPlate_showNameInArena = true
+KP.dbp.classPlate_showNameInArena = false
 KP.dbp.classPlate_showNameInPvE = true
 KP.dbp.classPlate_iconSize = 36
 KP.dbp.classPlate_offset = 0
 KP.dbp.classPlate_showIconInBG = false
-KP.dbp.classPlate_showIconInArena = true
+KP.dbp.classPlate_showIconInArena = false
 KP.dbp.classPlate_showIconInPvE = false
 -- Totem Plates
 KP.dbp.totemSize = 24 -- Size of the totem (or NPC) icon replacing the nameplate
