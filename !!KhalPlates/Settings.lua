@@ -12,6 +12,7 @@ KP.dbp.globalOffsetY = 21 -- Global offset Y for nameplates
 KP.dbp.globalScale = 1    -- Global scale for nameplates
 KP.dbp.levelFilter = 1    -- Minimum unit level to show its nameplate
 KP.dbp.friendlyClickthrough = false -- Disables hitbox on friendly nameplates
+KP.dbp.LDWfix = false      -- Hide nameplates when controlled by LDW
 -- Runtime references for previous values in profile changes
 KP.globalOffsetX = KP.dbp.globalOffsetX
 KP.globalOffsetY = KP.dbp.globalOffsetY
@@ -152,6 +153,14 @@ KP.dbp.TotemsCheck = { -- 1 = Icon, 0 = Hiden, false = nameplate
 -- Blacklist
 KP.dbp.Blacklist = CopyTable(KP.Blacklist)
 local tmpNewName = ""
+-- Enhanced Stacking
+KP.dbp.stackingEnabled = false
+KP.dbp.xspace = 130
+KP.dbp.yspace = 15
+KP.dbp.originpos = 0
+KP.dbp.upperborder = 35
+KP.dbp.tallBossFix = true
+KP.dbp.FreezeMouseover = false
 
 -------------------- Options Table --------------------
 KP.MainOptionTable = {
@@ -180,7 +189,8 @@ KP.MainOptionTable = {
 				healthBar_border = {
 					order = 4,
 					type = "select",
-					name = "Nameplate Style",
+					name = "Nameplate Style Preset",
+					desc = "This will override some of your current settings to match the preset.",
 					values = {
 						["KhalPlates"] = "KhalPlates",
 						["Blizzard"] = "Blizzard",
@@ -289,6 +299,7 @@ KP.MainOptionTable = {
 					order = 8,
 					type = "range",
 					name = "Global Scale",
+					desc = "Scales both the visual size and the clickable hitbox of nameplates.",
 					min = 0.5,
 					max = 2.5,
 					step = 0.01,
@@ -298,14 +309,11 @@ KP.MainOptionTable = {
 						KP:UpdateHitboxAttributes()
 					end,
 				},
-				lineBreak6 = {order = 9, type = "description", name = ""},
-				lineBreak7 = {order = 10, type = "description", name = ""},
-				lineBreak8 = {order = 11, type = "description",	name = ""},
 				globalOffsetX = {
-					order = 12,
+					order = 9,
 					type = "range",
-					name = "Global Offset X",
-					desc = "Affects only the visual nameplate.\nThe real hitbox can't be moved, just scaled.",
+					name = "Visual Offset X",
+					desc = "Affects only the nameplate's visual regions. The real hitbox can't be moved using this feature.",
 					min = -50,
 					max = 50,
 					step = 1,
@@ -316,10 +324,10 @@ KP.MainOptionTable = {
 					end,
 				},
 				globalOffsetY = {
-					order = 13,
+					order = 10,
 					type = "range",
-					name = "Global Offset Y",
-					desc = "Affects only the visual nameplate.\nThe real hitbox can't be moved, just scaled.",
+					name = "Visual Offset Y",
+					desc = "Affects only the nameplate's visual regions. The real hitbox can't be moved using this feature.",
 					min = -50,
 					max = 50,
 					step = 1,
@@ -329,11 +337,11 @@ KP.MainOptionTable = {
 						KP.globalOffsetY = KP.dbp.globalOffsetY
 					end,
 				},
-				lineBreak9 = {order = 14, type = "description", name = ""},
-				lineBreak10 = {order = 15, type = "description", name = ""},
-				lineBreak11 = {order = 16, type = "description", name = ""},
+				lineBreak6 = {order = 11, type = "description", name = ""},
+				lineBreak7 = {order = 12, type = "description", name = ""},
+				lineBreak8 = {order = 13, type = "description", name = ""},
 				levelFilter = {
-					order = 17,
+					order = 14,
 					type = "range",
 					name = "Level Filter",
 					desc = "Minimum unit level required for the nameplate to be shown.",
@@ -345,17 +353,126 @@ KP.MainOptionTable = {
 						KP:UpdateAllShownPlates()
 					end,
 				},
-				lineBreak12 = {order = 18, type = "description", name = ""},
-				lineBreak13 = {order = 19, type = "description", name = ""},
-				lineBreak14 = {order = 20, type = "description", name = ""},
 				friendlyClickthrough = {
-					order = 21,
+					order = 15,
 					type = "toggle",
 					name = "Click-through Friendly Nameplates",
-					desc = "Disables friendly nameplates hitboxes inside PvE and PvP instances",
+					desc = "Disable friendly nameplates hitboxes inside PvE and PvP instances.",
 				},
-				lineBreak15 = {order = 22, type = "description", name = ""},
-				lineBreak16 = {order = 23, type = "description", name = ""},
+				LDWfix = {
+					order = 15,
+					type = "toggle",
+					name = "Hide on LDW MC",
+					desc = "Hide nameplates when mind-controlled by Lady Deathwhisper.",
+					set = function(info, val)
+						KP.dbp[info[#info]] = val
+						if val then
+							KP.EventHandler:RegisterEvent("ZONE_CHANGED_INDOORS")
+							KP.EventHandler:RegisterEvent("UNIT_AURA")
+							KP.isICC = false
+							KP.isLDWZone = false
+							SetMapToCurrentZone()
+							if GetCurrentMapAreaID() == 605 then
+								KP.isICC = true
+								if GetSubZoneText() == KP.LDWZoneText then
+									KP.isLDWZone = true
+								end
+							end
+						else
+							KP.EventHandler:UnregisterEvent("ZONE_CHANGED_INDOORS")
+							KP.EventHandler:UnregisterEvent("UNIT_AURA")
+							KP.isICC = false
+							KP.isLDWZone = false
+							if KP.DominateMind then
+								KP.DominateMind = nil
+								SetUIVisibility(true)
+							end							
+						end
+					end,
+				},
+				lineBreak9 = {order = 17, type = "description", name = ""},
+				lineBreak10 = {order = 18, type = "description", name = ""},
+				stacking_header = {
+					order = 19,
+					type = "header",
+					name = "Enhanced Stacking",
+				},
+				lineBreak11 = {order = 20, type = "description", name = ""},
+				stackingEnabled = {
+					order = 21,
+					type = "toggle",
+					name = "Enable",
+					desc = "Simulates a retail-like stacking for enemy nameplates. This feature impacts CPU performance, use it with discretion.",
+					set = function(info, val)
+						KP.dbp[info[#info]] = val
+						KP:UpdateWorldFrameHeight()
+						KP:ResetStackingClamp()
+						KP:UpdateAllShownPlates()
+					end,
+				},
+				lineBreak12 = {order = 22, type = "description", name = ""},
+				lineBreak13 = {order = 23, type = "description", name = ""},
+				xspace = {
+					order = 24,
+					type = "range",
+					name = "Collider Width",
+					desc = "Sets the width of the virtual collider centered on each nameplate used to detect overlaps.",
+					min = 20,
+					max = 200,
+					step = 1,
+					disabled = function() return not KP.dbp.stackingEnabled end
+				},
+				yspace = {
+					order = 25,
+					type = "range",
+					name = "Collider Height",
+					desc = "Sets the height of the virtual collider centered on each nameplate used to detect overlaps.",
+					min = 5,
+					max = 50,
+					step = 1,
+					disabled = function() return not KP.dbp.stackingEnabled end
+				},
+				originpos = {
+					order = 26,
+					type = "range",
+					name = "Vertical Offset",
+					desc = "Vertically offsets the entire nameplate, including its hitbox.",
+					min = 0,
+					max = 50,
+					step = 1,
+					disabled = function() return not KP.dbp.stackingEnabled end
+				},
+				lineBreak14 = {order = 27, type = "description", name = ""},
+				lineBreak15 = {order = 28, type = "description", name = ""},
+				upperborder = {
+					order = 29,
+					type = "range",
+					name = "Top Screen Boundary",
+					desc = "Defines how far from the top of the screen targeted nameplate can move upward.",
+					min = 0,
+					max = 100,
+					step = 1,
+					disabled = function() return not KP.dbp.stackingEnabled end
+				},
+				tallBossFix = {
+					order = 30,
+					type = "toggle",
+					name = "Tall Boss Fix",
+					desc = "Prevents tall bosses' nameplates from going above the top of the screen while targeted.",
+					set = function(info, val)
+						local tallBossFixWasEnabled = KP.dbp.tallBossFix
+						KP.dbp[info[#info]] = val
+						KP:UpdateWorldFrameHeight()
+					end,					
+					disabled = function() return not KP.dbp.stackingEnabled end
+				},
+				FreezeMouseover = {
+					order = 31,
+					type = "toggle",
+					name = "Freeze Mouseover",
+					desc = "Stops the nameplate you're mousing over from moving for better selection.",
+					disabled = function() return not KP.dbp.stackingEnabled end
+				},
 			},
 		},
 		Text = {
@@ -1456,45 +1573,21 @@ KP.MainOptionTable = {
 				},
 				lineBreak12 = {order = 32, type = "description", name = ""},
 				lineBreak13 = {order = 33, type = "description", name = ""},
-				totemIcon_header = {
-					order = 34,
-					type = "header",
-					name = "Totem Icon",
-				},
-				lineBreak14 = {order = 35, type = "description", name = ""},
-				totemSize = {
-					order = 36,
-					type = "range",
-					name = "Icon Size",
-					min = 15,
-					max = 35,
-					step = 0.1,
-				},
-				totemOffset = {
-					order = 37,
-					type = "range",
-					name = "Offset Y",
-					min = -50,
-					max = 50,
-					step = 0.1,
-				},
-				lineBreak15 = {order = 38, type = "description", name = ""},
-				lineBreak16 = {order = 39, type = "description", name = ""},
 				classPlate_iconHeader = {
-					order = 40,
+					order = 34,
 					type = "header",
 					name = "Special Class Icon",
 				},
-				lineBreak17 = {order = 41, type = "description", name = ""},
+				lineBreak14 = {order = 35, type = "description", name = ""},
 				classPlate_iconDesc = {
-					order = 42, 
+					order = 36, 
 					type = "description", 
 					name = "Unlike the regular class icon, this completely replaces friendly player nameplates."
 				},
-				lineBreak18 = {order = 43, type = "description", name = ""},
-				lineBreak19 = {order = 44, type = "description", name = ""},
+				lineBreak15 = {order = 37, type = "description", name = ""},
+				lineBreak16 = {order = 38, type = "description", name = ""},
 				classPlate_iconSize = {
-					order = 45,
+					order = 39,
 					type = "range",
 					name = "Icon Size",
 					min = 20,
@@ -1502,38 +1595,78 @@ KP.MainOptionTable = {
 					step = 0.1,
 				},
 				classPlate_offset = {
-					order = 46,
+					order = 40,
 					type = "range",
 					name = "Offset Y",
 					min = -50,
 					max = 50,
 					step = 0.1,
 				},
-				lineBreak20 = {order = 47, type = "description", name = ""},
+				lineBreak17 = {order = 41, type = "description", name = ""},
 				classPlate_showIconInBG = {
-					order = 48,
+					order = 42,
 					type = "toggle",
 					name = "Show in BGs",
 				},
 				classPlate_showIconInArena = {
-					order = 49,
+					order = 43,
 					type = "toggle",
 					name = "Show in Arenas",
 				},
 				classPlate_showIconInPvE = {
-					order = 50,
+					order = 44,
 					type = "toggle",
 					name = "Show in PvE",
 				},
-				lineBreak21 = {order = 51, type = "description", name = ""},
-				lineBreak22 = {order = 52, type = "description", name = ""},
+				lineBreak18 = {order = 45, type = "description", name = ""},
+				lineBreak19 = {order = 46, type = "description", name = ""},
 			},
 		},
 		Totems = {
 			order = 6,
 			name = "Totems",
 			type = "group",
-			args = {}
+			args = {
+				lineBreak1 = {order = 1, type = "description", name = ""},
+				Totem_header = {
+					order = 2,
+					type = "header",
+					name = "Totem Icon",
+				},
+				lineBreak2 = {order = 3, type = "description", name = ""},
+				lineBreak3 = {order = 4, type = "description", name = ""},	
+				totemSize = {
+					order = 5,
+					type = "range",
+					name = "Icon Size",
+					desc = "Controls the size of all Totem and Blacklisted icons.",
+					min = 15,
+					max = 35,
+					step = 0.1,
+					set = function(info, val)
+						KP.dbp[info[#info]] = val
+						KP:UpdateAllIcons()
+						KP:UpdateAllShownPlates()
+					end,
+				},
+				totemOffset = {
+					order = 6,
+					type = "range",
+					name = "Offset Y",
+					desc = "Adjusts the vertical position of all Totem and Blacklisted icons.",
+					min = -50,
+					max = 50,
+					step = 0.1,
+					set = function(info, val)
+						KP.dbp[info[#info]] = val
+						KP:UpdateAllIcons()
+						KP:UpdateAllShownPlates()
+					end,
+				},
+				lineBreak4 = {order = 7, type = "description", name = ""},
+				lineBreak5 = {order = 8, type = "description", name = ""},
+				lineBreak6 = {order = 9, type = "description", name = ""},	
+			}
 		},
 		BlackList = {
 			order = 7,

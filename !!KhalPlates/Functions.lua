@@ -2,8 +2,8 @@
 local AddonFile, KP = ... -- namespace
 
 ----------------------------- API -----------------------------
-local ipairs, unpack, tonumber, tostring, wipe, CreateFrame, UnitCastingInfo, UnitChannelInfo, UnitName, UnitClass, GetNumArenaOpponents, GetNumPartyMembers, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, floor =
-      ipairs, unpack, tonumber, tostring, wipe, CreateFrame, UnitCastingInfo, UnitChannelInfo, UnitName, UnitClass, GetNumArenaOpponents, GetNumPartyMembers, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, math.floor
+local ipairs, unpack, tonumber, tostring, select, wipe, CreateFrame, UnitCastingInfo, UnitChannelInfo, UnitName, UnitClass, GetNumArenaOpponents, GetNumPartyMembers, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, math_exp, math_floor, math_abs =
+      ipairs, unpack, tonumber, tostring, select, wipe, CreateFrame, UnitCastingInfo, UnitChannelInfo, UnitName, UnitClass, GetNumArenaOpponents, GetNumPartyMembers, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, math.exp, math.floor, math.abs
 
 ------------------------- Core Variables -------------------------
 local NP_WIDTH = 156.65118520899  -- Nameplate original width (don't modify)
@@ -11,6 +11,7 @@ local NP_HEIGHT = 39.162796302247 -- Nameplate original height (don't modify)
 local VirtualPlates = {}          -- Storage table: Virtual nameplate frames
 local RealPlates = {}             -- Storage table: Real nameplate frames
 local PlatesVisible = {}          -- Storage table: currently active nameplates
+local StackablePlates = {}        -- Storage table: Plates filtered for improved stacking
 local ClassByFriendName = {}      -- Storage table: maps friendly player names (party/raid) to their class
 local ArenaID = {}                -- Storage table: maps arena names to their ID number
 local PartyID = {}                -- Storage table: maps party names to their ID number
@@ -36,7 +37,7 @@ SetCVar("ShowClassColorInNameplate", 1) -- "Class Colors in Nameplates" must be 
 -- Converts normalized RGB from nameplates into a custom color key and returns the class name
 local function ClassByPlateColor(healthBar)
 	local r, g, b = healthBar:GetStatusBarColor()
-	local key = floor(r * 100) * 10000 + floor(g * 100) * 100 + floor(b * 100)
+	local key = math_floor(r * 100) * 10000 + math_floor(g * 100) * 100 + math_floor(b * 100)
 	return ClassByKey[key]
 end
 
@@ -162,7 +163,7 @@ local function UpdateHealthTextValue(healthBar)
 	local min, max = healthBar:GetMinMaxValues()
 	local val = healthBar:GetValue()
 	if max > 0 then
-		local percent = floor((val / max) * 100)
+		local percent = math_floor((val / max) * 100)
 		if percent < 100 and percent > 0 then
 			healthBar.healthText:SetText(percent .. "%")
 		else
@@ -676,9 +677,11 @@ local function UpdateGroupInfo()
 	end
 	for i = 1 , GetNumRaidMembers() do
 		local name, _, _, _, _, class = GetRaidRosterInfo(i)
-		name = name:match("([^%-]+).*") -- remove realm suffix
-		if name and class and not ClassByFriendName[name] then
-			ClassByFriendName[name] = class
+		if name and class then
+			name = name:match("([^%-]+).*") -- remove realm suffix
+			if not ClassByFriendName[name] then
+				ClassByFriendName[name] = class
+			end
 		end
 	end
 end
@@ -858,6 +861,10 @@ local function UpdatePlateVisibility(Plate, Virtual)
 				end
 				nameText:SetTextColor(Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB)
 				Virtual.nameTextIsYellow = false
+				----------------- Init Enhanced Plate Stacking -----------------
+				if KP.dbp.stackingEnabled and not Plate.isFriendly then
+					KP.StackablePlates[Plate] = {xpos = 0, ypos = 0, position = 0}
+				end
 			end
 		end	
 	end
@@ -879,10 +886,26 @@ local function ResetPlateFlags(Plate, Virtual)
 		Plate.classPlate.nameText:Hide()
 		Plate.classPlate.icon:Hide()
 	end
+	if KP.dbp.stackingEnabled then
+		KP.StackablePlates[Plate] = nil
+		Plate:SetClampRectInsets(0, 0, 0, 0)
+		Plate:SetClampedToScreen(false) 
+	end
+end
+
+function KP:ResetStackingClamp()
+	if self.dbp.stackingEnabled then
+		SetCVar("nameplateAllowOverlap", 1)
+	end	
+	for Plate in pairs(VirtualPlates) do
+		self.StackablePlates[Plate] = nil
+		Plate:SetClampRectInsets(0, 0, 0, 0)
+		Plate:SetClampedToScreen(false) 		
+	end
 end
 
 local function UpdateHitboxOutOfCombat(Plate, Virtual)
-	if not Virtual:IsShown() or (KP.isFriendly and KP.dbp.friendlyClickthrough and KP.inInstance) then
+	if not Virtual:IsShown() or (Plate.isFriendly and KP.dbp.friendlyClickthrough and KP.inInstance) then
 		Plate:SetSize(0.01, 0.01)
 	else
 		if KP.dbp.healthBar_border == "KhalPlates" then
@@ -919,6 +942,93 @@ function KP:UpdateHitboxAttributes()
 	end
 end
 
+-- Enlarging of WorldFrame, so that nameplates are displayed even if they have slightly left the screen or are very high up, as is the case with large bosses.
+KP.ScreenWidth = GetScreenWidth()
+KP.ScreenHeight = 768
+local function ExtendWorldFrameHeight(shouldExtend)
+	local heightScale = shouldExtend and 50 or 1
+	WorldFrame:ClearAllPoints()
+	WorldFrame:SetPoint("BOTTOM")
+	WorldFrame:SetWidth(KP.ScreenWidth)
+	WorldFrame:SetHeight(KP.ScreenHeight*heightScale)
+end
+function KP:UpdateWorldFrameHeight(init)
+	self.ScreenWidth = GetScreenWidth() * UIParent:GetEffectiveScale()
+	if self.dbp.stackingEnabled then
+		SetCVar("nameplateAllowOverlap", 1)
+		if self.dbp.tallBossFix then
+			ExtendWorldFrameHeight(true)
+		elseif not init then
+			ExtendWorldFrameHeight(false)
+		end
+	elseif not init then
+		ExtendWorldFrameHeight(false)
+	end
+end
+
+-- Retail-like Nameplate Stacking
+-- All visible enemy nameplates are iterated and the minimum distance to the next nameplate is determined.
+-- If there is no other nameplate in the immediate vicinity of the original position, the position is reset (to prevent the nameplates from rising higher and higher).
+-- Depending on whether the position is to be reset or the nameplate is above or below the closest one different functions are used for a smooth movement.
+local ySpeed = 0.7
+local raiseSpeed = 1
+local lowerSpeed = 1
+local resetSpeed = 1
+local delta = ySpeed * 5
+local function UpdateStacking()
+	if not KP.dbp.stackingEnabled then return end
+    local xspace = KP.dbp.xspace * KP.dbp.globalScale
+    local yspace = KP.dbp.yspace * KP.dbp.globalScale
+    for Plate1, Plate1_StackData in pairs(KP.StackablePlates) do
+        local width, height = Plate1:GetSize()
+		local x, y = select(4, Plate1:GetPoint(1))
+		KP.StackablePlates[Plate1].xpos = x
+		KP.StackablePlates[Plate1].ypos = y
+        if KP.dbp.FreezeMouseover and VirtualPlates[Plate1].healthBarHighlight:IsShown() then  -- Freeze Mouseover Nameplate
+            local x, y =  Plate1:GetCenter() -- This Coordinates are the "real" values for the center point
+            local newposition = y - Plate1_StackData.ypos - KP.dbp.originpos + height/2
+            Plate1_StackData.position = newposition
+            Plate1_StackData.xpos = x
+            Plate1:SetClampedToScreen()
+            Plate1:SetClampRectInsets(-2*KP.ScreenWidth, KP.ScreenWidth - x - width/2, KP.ScreenHeight - y - height/2, -2*KP.ScreenHeight)
+        else
+            local min = 1000
+            local reset = true
+            for Plate2, Plate2_StackData in pairs(KP.StackablePlates) do
+                if Plate1 ~= Plate2 then
+                    local xdiff = Plate1_StackData.xpos - Plate2_StackData.xpos
+                    local ydiff = Plate1_StackData.ypos + Plate1_StackData.position - Plate2_StackData.ypos - Plate2_StackData.position
+                    local ydiff_origin = Plate1_StackData.ypos - Plate2_StackData.ypos - Plate2_StackData.position
+                    if math_abs(xdiff) < xspace then -- only consider nameplates in xspace
+                        if ydiff >= 0 and math_abs(ydiff) < min then -- find minimal distance from other Plate2 below Plate1 
+                            min = math_abs(ydiff)
+                        end
+                        if math_abs(ydiff_origin) < yspace then
+                            reset = false  -- no reset if nameplate near origin position
+                        end
+                    end
+                end
+            end
+            local oldposition = Plate1_StackData.position
+            local newposition = oldposition
+            if oldposition >= 2*delta and reset then
+                newposition = oldposition - math_exp(-10/oldposition)*delta*resetSpeed
+            elseif  min < yspace then
+                newposition = oldposition + math_exp(-min/yspace)*delta*raiseSpeed
+            elseif (oldposition >= 2*delta and min > yspace + 2*delta) then
+                newposition = oldposition - math_exp(-yspace/min)*delta*lowerSpeed*0.8
+            end
+            Plate1_StackData.position = newposition
+            Plate1:SetClampedToScreen()
+			if VirtualPlates[Plate1].isTarget then
+				Plate1:SetClampRectInsets(-10, 10, KP.dbp.upperborder, - Plate1_StackData.ypos - newposition - KP.dbp.originpos + height)
+			else
+				Plate1:SetClampRectInsets(0.5*width, -0.5*width, -height, - Plate1_StackData.ypos - newposition - KP.dbp.originpos + height)
+			end
+        end
+    end
+end
+
 function KP:UpdateProfile()
 	self:UpdateAllVirtualsScale()
 	self:UpdateAllTexts()
@@ -928,6 +1038,8 @@ function KP:UpdateProfile()
 	self:UpdateAllGlows()
 	self:UpdateAllCastBarBorders()
 	self:BuildBlacklistUI()
+	self:UpdateWorldFrameHeight()
+	self:ResetStackingClamp()
 	self:UpdateAllShownPlates()
 	self:UpdateHitboxAttributes()
 end
@@ -938,6 +1050,7 @@ KP.NP_HEIGHT = NP_HEIGHT
 KP.VirtualPlates = VirtualPlates
 KP.RealPlates = RealPlates
 KP.PlatesVisible = PlatesVisible
+KP.StackablePlates = StackablePlates
 KP.ClassByFriendName = ClassByFriendName
 KP.ArenaID = ArenaID
 KP.PartyID = PartyID
@@ -955,3 +1068,4 @@ KP.UpdateArenaInfo = UpdateArenaInfo
 KP.SetupKhalPlate = SetupKhalPlate
 KP.SetupTotemPlate = SetupTotemPlate
 KP.SetupClassPlate = SetupClassPlate
+KP.UpdateStacking = UpdateStacking

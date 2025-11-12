@@ -6,8 +6,8 @@
 local AddonFile, KP = ...
 
 -- API
-local select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, IsInInstance, ToggleFrame, UIPanelWindows =
-      select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, IsInInstance, ToggleFrame, UIPanelWindows
+local select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitDebuff, IsInInstance, ToggleFrame, UIPanelWindows, SetMapToCurrentZone, GetCurrentMapAreaID, GetSubZoneText, SetUIVisibility, SetCVar =
+      select, sort, wipe, pairs, ipairs, unpack, CreateFrame, UnitName, UnitDebuff, IsInInstance, ToggleFrame, UIPanelWindows, SetMapToCurrentZone, GetCurrentMapAreaID, GetSubZoneText, SetUIVisibility, SetCVar
 
 -- Localized namespace definitions
 local NP_WIDTH = KP.NP_WIDTH
@@ -15,6 +15,7 @@ local NP_HEIGHT = KP.NP_HEIGHT
 local VirtualPlates = KP.VirtualPlates
 local RealPlates = KP.RealPlates
 local PlatesVisible = KP.PlatesVisible
+local StackablePlates = KP.StackablePlates
 local ClassByFriendName = KP.ClassByFriendName
 local ArenaID = KP.ArenaID
 local PartyID = KP.PartyID
@@ -32,6 +33,7 @@ local UpdateArenaInfo = KP.UpdateArenaInfo
 local SetupKhalPlate = KP.SetupKhalPlate
 local SetupTotemPlate = KP.SetupTotemPlate
 local SetupClassPlate = KP.SetupClassPlate
+local UpdateStacking = KP.UpdateStacking
 
 -- Local definitions
 local EventHandler = CreateFrame("Frame", nil, WorldFrame) -- Main addon frame (event handler + access to native frame methods)
@@ -46,12 +48,15 @@ local SetFrameLevel = EventHandler.SetFrameLevel
 local GetParent = EventHandler.GetParent
 
 -- Status Flags
+KP.completeLoaded = false
 KP.inCombat = false
 KP.inInstance = false
 KP.inPvEInstance = false
 KP.inPvPInstance = false
 KP.inBG = false
 KP.inArena = false
+KP.isICC = false
+KP.isLDWZone = false
 
 -- SecureHandlers System: Manages nameplate hitbox resizing while in combat
 local TriggerFrames = {}
@@ -330,6 +335,7 @@ do
 	end)
 
 	function KP:WorldFrameOnUpdate(elapsed)
+		UpdateStacking()
 		NextUpdate = NextUpdate - elapsed
 		if NextUpdate <= 0 then
 			NextUpdate = UpdateRate
@@ -457,6 +463,12 @@ function KP:Initialize()
 		ResizeHitBox:SetAttribute("height", NP_HEIGHT * self.dbp.globalScale)
 	end
 
+	SetUIVisibility(true)
+	if self.dbp.LDWfix then
+		EventHandler:RegisterEvent("ZONE_CHANGED_INDOORS")
+		EventHandler:RegisterEvent("UNIT_AURA")
+	end
+
 	local config = LibStub("AceConfig-3.0")
 	local dialog = LibStub("AceConfigDialog-3.0")
 	config:RegisterOptionsTable("KhalPlates", self.MainOptionTable)
@@ -478,6 +490,8 @@ end
 
 function EventHandler:PLAYER_LOGIN(event)
 	KP:UpdateTotemDesc()
+	KP:UpdateWorldFrameHeight(true)
+	SetCVar("showVKeyCastbar", 1)
 	self:UnregisterEvent(event)
 	self[event] = nil
 end
@@ -508,7 +522,6 @@ function EventHandler:PLAYER_TARGET_CHANGED()
 	end
 end
 
-
 function EventHandler:PLAYER_ENTERING_WORLD()
 	local inInstance, instanceType = IsInInstance()
 	KP.inInstance = inInstance == 1
@@ -517,9 +530,24 @@ function EventHandler:PLAYER_ENTERING_WORLD()
 	KP.inBG = instanceType == "pvp"
 	KP.inArena = instanceType == "arena"
 	UpdateGroupInfo()
-	if KP.inArena then
+	if instanceType == "arena" then
 		UpdateArenaInfo()
 	end
+	KP.isICC = false
+	KP.isLDWZone = false
+	if instanceType == "raid" and KP.dbp.LDWfix then
+		SetMapToCurrentZone()
+		if GetCurrentMapAreaID() == 605 then
+			KP.isICC = true
+			if GetSubZoneText() == KP.LDWZoneText then
+				KP.isLDWZone = true
+			end
+		end
+	end
+    if KP.DominateMind then
+        KP.DominateMind = nil
+		SetUIVisibility(true)
+    end
 end
 
 function EventHandler:PARTY_MEMBERS_CHANGED()
@@ -573,6 +601,44 @@ function EventHandler:ARENA_OPPONENT_UPDATE(event, unitToken, updateReason)
 	end
 end
 
+local function CheckDominateMind()
+    local i = 1
+    while true do
+        local spellID = select(11, UnitDebuff("player", i))
+        if not spellID then break end
+        if spellID == 71289 then
+            if not KP.DominateMind then
+                KP.DominateMind = true
+                SetUIVisibility(false)
+            end
+            return
+        end
+        i = i + 1
+    end
+    if KP.DominateMind then
+        KP.DominateMind = nil
+        SetUIVisibility(true)
+    end
+end
+
+function EventHandler:ZONE_CHANGED_INDOORS()
+	if KP.isICC and GetSubZoneText() == KP.LDWZoneText then
+		KP.isLDWZone = true
+	else
+		KP.isLDWZone = false
+	end
+    if KP.DominateMind then
+        KP.DominateMind = nil
+        SetUIVisibility(true)
+    end
+end
+
+function EventHandler:UNIT_AURA(event, unit)
+	if unit == "player" and KP.isLDWZone then
+		CheckDominateMind()
+	end
+end
+
 --- Global event handler.
 function EventHandler:OnEvent(event, ...)
 	if self[event] then
@@ -591,3 +657,4 @@ EventHandler:RegisterEvent("PARTY_MEMBERS_CHANGED")
 EventHandler:RegisterEvent("UNIT_FACTION")
 EventHandler:RegisterEvent("PLAYER_PVP_RANK_CHANGED")
 EventHandler:RegisterEvent("ARENA_OPPONENT_UPDATE")
+KP.EventHandler = EventHandler
