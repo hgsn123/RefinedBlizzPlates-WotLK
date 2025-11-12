@@ -13,7 +13,7 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 - Implemented a Blacklist to hide specific nameplates or replace them with icons.
 - Added an option to replace friendly player nameplates with only the name and class icon.
 - Added click-through behavior for totems, blacklist and, optionally, friendly nameplates.
-- Integrated optional system that simulates Retail-like nameplate stacking.
+- Integrated optional system that simulates Retail's nameplate stacking.
 
 ## Screenshots
 <p align="center">
