@@ -244,7 +244,6 @@ local function SetupCastText(Virtual)
 	end
 	castBar.castText:Hide()
 	castBar.castTextDelay = castBar.castTextDelay or CreateFrame("Frame")
-	castBar.castTextDelay:Hide()
 	castBar.castTextDelay:SetScript("OnUpdate", function(self)
 		self:Hide()
 		local unit = RealPlates[Virtual].namePlateUnitToken or "target"
@@ -272,23 +271,13 @@ local function SetupCastText(Virtual)
 				castBar.castTimerText:Hide()
 			end
 		else
-			Virtual.castBarBorder:Hide()
-			Virtual.shieldCastBarBorder:Hide()
-			Virtual.spellIcon:Hide()
 			castBar.BackgroundTex:Hide()
 			castBar.castText:Hide()
 			castBar.castTimerText:Hide()
 		end
 	end)
-	local function UpdateCastText()
-		castBar.castTextDelay:Show()
-	end
-	UpdateCastText()
-	castBar:HookScript("OnShow", UpdateCastText)
-	local function HideCastText()
-		castBar.channeling = false
-	end
-	castBar:HookScript("OnHide", HideCastText)
+	castBar:HookScript("OnShow", function() castBar.castTextDelay:Show() end)
+	castBar:HookScript("OnHide", function() castBar.channeling = false end)
 end
 
 local function SetupCastTimer(castBar)

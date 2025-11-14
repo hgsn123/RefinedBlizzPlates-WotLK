@@ -477,14 +477,14 @@ KP.MainOptionTable = {
 				lineBreak16 = {order = 32, type = "description", name = ""},
 				lineBreak17 = {order = 33, type = "description", name = ""},
 				FreezeMouseover = {
-					order = 35,
+					order = 34,
 					type = "toggle",
 					name = "Freeze Mouseover",
 					desc = "Stops the nameplate you're mousing over from moving for better selection.",
 					disabled = function() return not KP.dbp.stackingEnabled end
 				},
 				stackingInInstance = {
-					order = 36,
+					order = 35,
 					type = "toggle",
 					name = "Disable in Open World",
 					desc = "Only process stacking inside PvE and PvP instances. This will reduce CPU usage in the open world.",
