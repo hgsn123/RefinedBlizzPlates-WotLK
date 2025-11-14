@@ -89,6 +89,8 @@ KP.dbp.castTimerText_anchor = "RIGHT"
 KP.dbp.castTimerText_offsetX = 0
 KP.dbp.castTimerText_offsetY = 0
 KP.dbp.castTimerText_color = {1, 1, 1} -- white
+-- Cast Glow (Shows when nameplate unit is targetting you, requires nontarget castbar patch)
+KP.dbp.enableCastGlow = true
 -- Elite Icon
 KP.dbp.eliteIcon_anchor = "Left"
 KP.dbp.eliteIcon_Tint = {1, 1, 1}

@@ -2,8 +2,8 @@
 local AddonFile, KP = ... -- namespace
 
 ----------------------------- API -----------------------------
-local ipairs, unpack, tonumber, tostring, select, wipe, CreateFrame, UnitCastingInfo, UnitChannelInfo, UnitName, UnitClass, GetNumArenaOpponents, GetNumPartyMembers, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, math_exp, math_floor, math_abs =
-      ipairs, unpack, tonumber, tostring, select, wipe, CreateFrame, UnitCastingInfo, UnitChannelInfo, UnitName, UnitClass, GetNumArenaOpponents, GetNumPartyMembers, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, math.exp, math.floor, math.abs
+local ipairs, unpack, tonumber, tostring, select, wipe, CreateFrame, UnitCastingInfo, UnitChannelInfo, UnitName, UnitClass, UnitIsUnit, UnitCanAttack, GetNumArenaOpponents, GetNumPartyMembers, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, math_exp, math_floor, math_abs =
+      ipairs, unpack, tonumber, tostring, select, wipe, CreateFrame, UnitCastingInfo, UnitChannelInfo, UnitName, UnitClass, UnitIsUnit, UnitCanAttack, GetNumArenaOpponents, GetNumPartyMembers, GetNumRaidMembers, GetRaidRosterInfo, RAID_CLASS_COLORS, math.exp, math.floor, math.abs
 
 ------------------------- Core Variables -------------------------
 local NP_WIDTH = 156.65118520899  -- Nameplate original width (don't modify)
@@ -246,7 +246,8 @@ local function SetupCastText(Virtual)
 	castBar.castTextDelay = castBar.castTextDelay or CreateFrame("Frame")
 	castBar.castTextDelay:SetScript("OnUpdate", function(self)
 		self:Hide()
-		local unit = RealPlates[Virtual].namePlateUnitToken or "target"
+		local Plate = RealPlates[Virtual]
+		local unit = Plate.namePlateUnitToken or Plate.unitToken or "target"
 		local spellName 
 		local spellCasting = UnitCastingInfo(unit)
 		local spellChanneling = UnitChannelInfo(unit)
@@ -298,6 +299,52 @@ local function SetupCastTimer(castBar)
 			end
 		end
 	end)
+end
+
+local function SetupCastGlow(Virtual)
+	if Virtual.castGlow then return end
+	Virtual.castGlow = Virtual:CreateTexture(nil, "OVERLAY")	
+	Virtual.castGlow:SetTexture(ASSETS .. "PlateBorders\\CastBar-Glow")
+	Virtual.castGlow:SetTexCoord(0, 0.55, 0, 1)
+	if KP.dbp.healthBar_border == "KhalPlates" then
+		Virtual.castGlow:SetSize(160, 40)
+		Virtual.castGlow:SetPoint("CENTER", 2.75, -27.5 + KP.dbp.globalOffsetY)
+	else
+		Virtual.castGlow:SetSize(173.5, 40)
+		Virtual.castGlow:SetPoint("CENTER", 2.2, -27.5 + KP.dbp.globalOffsetY)
+	end
+	Virtual.castGlow:SetVertexColor(0.25, 0.75, 0.25)
+	Virtual.castGlow:Hide()
+	if KP.dbp.enableCastGlow then
+		local castBar = select(2, Virtual:GetChildren())
+		local castBarBorder = select(3, Virtual:GetRegions())
+		local Plate = RealPlates[Virtual]
+		castBar:HookScript("OnShow", function()
+			local unit = Plate.unitToken
+			if unit then
+				if UnitName(unit.."target") == UnitName("player") and castBarBorder:IsShown() and not UnitIsUnit("target", unit) then
+					local isFriendly = not UnitCanAttack("player", unit)
+					if isFriendly then
+						Virtual.castGlow:SetVertexColor(0.25, 0.75, 0.25)
+					else
+						Virtual.castGlow:SetVertexColor(1, 0, 0)
+					end
+					Virtual.castGlow:Show()
+				end
+			end
+		end)
+		castBar:HookScript("OnValueChanged", function()
+			local unit = Plate.unitToken
+			if unit then
+				if UnitIsUnit("target", unit) == 1 then
+					Virtual.castGlow:Hide()
+				end
+			end
+		end)
+		castBar:HookScript("OnHide", function()
+			Virtual.castGlow:Hide()
+		end)
+	end
 end
 
 local function SetupBossIcon(Virtual)
@@ -415,6 +462,7 @@ local function SetupKhalPlate(Virtual)
 	SetupBarBackground(Virtual.castBar, true)
 	SetupCastText(Virtual)
 	SetupCastTimer(Virtual.castBar)
+	SetupCastGlow(Virtual)
 	SetupBossIcon(Virtual)
 	SetupRaidTargetIcon(Virtual)
 	SetupEliteIcon(Virtual)
@@ -623,6 +671,7 @@ function KP:UpdateAllGlows()
 		local targetGlowTotem = Plate.totemPlate and Plate.totemPlate.targetGlow
 		local healthBarHighlight = Virtual.healthBarHighlight
 		local threatGlow = Virtual.threatGlow
+		local castGlow = Virtual.castGlow
 		targetGlow:SetVertexColor(unpack(self.dbp.targetGlow_Tint))
 		healthBarHighlight:SetVertexColor(unpack(self.dbp.mouseoverGlow_Tint))
 		healthBarHighlight:ClearAllPoints()
@@ -634,6 +683,8 @@ function KP:UpdateAllGlows()
 			healthBarHighlight:SetSize(self.NP_WIDTH, self.NP_HEIGHT)
 			healthBarHighlight:SetPoint("CENTER", 1.2 + self.dbp.globalOffsetX, -8.7 + self.dbp.globalOffsetY)
 			threatGlow:SetTexture(ASSETS .. "PlateBorders\\HealthBar-ThreatGlow")
+			castGlow:SetSize(160, 40)
+			castGlow:SetPoint("CENTER", 2.75, -27.5 + KP.dbp.globalOffsetY)
 		else
 			targetGlow:SetTexture(ASSETS .. "PlateBorders\\HealthBar-TargetGlowBlizz")
 			targetGlow:SetSize(self.NP_WIDTH * 1.165, self.NP_HEIGHT)
@@ -642,6 +693,8 @@ function KP:UpdateAllGlows()
 			healthBarHighlight:SetSize(self.NP_WIDTH * 1.165, self.NP_HEIGHT)
 			healthBarHighlight:SetPoint("CENTER", 11.83 + self.dbp.globalOffsetX, -8.7 + self.dbp.globalOffsetY)
 			threatGlow:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash")
+			castGlow:SetSize(173.5, 40)
+			castGlow:SetPoint("CENTER", 2.2, -27.5 + KP.dbp.globalOffsetY)
 		end
 		if targetGlowTotem then
 			targetGlowTotem:SetVertexColor(unpack(self.dbp.targetGlow_Tint))
@@ -814,16 +867,19 @@ local function UpdatePlateVisibility(Plate, Virtual)
 								UpdateGroupInfo()
 								partyID = PartyID[name]
 							end
-							if partyID and KP.dbp.PartyIDText_show then
-								ArenaIDText:SetTextColor(unpack(KP.dbp.PartyIDText_color))
-								ArenaIDText:SetText(partyID)
-								ArenaIDText:Show()
-								if KP.dbp.PartyIDText_HideLevel then
-									levelText:Hide()
-								end
-								if KP.dbp.PartyIDText_HideName then
-									nameText:Hide()
-								end								
+							if partyID then
+								Plate.unitToken = "party" .. partyID
+								if KP.dbp.PartyIDText_show then
+									ArenaIDText:SetTextColor(unpack(KP.dbp.PartyIDText_color))
+									ArenaIDText:SetText(partyID)
+									ArenaIDText:Show()
+									if KP.dbp.PartyIDText_HideLevel then
+										levelText:Hide()
+									end
+									if KP.dbp.PartyIDText_HideName then
+										nameText:Hide()
+									end
+								end							
 							end
 						else
 							local arenaID = ArenaID[name]
@@ -831,15 +887,18 @@ local function UpdatePlateVisibility(Plate, Virtual)
 								UpdateArenaInfo()
 								arenaID = ArenaID[name]
 							end
-							if arenaID and KP.dbp.ArenaIDText_show then
-								ArenaIDText:SetTextColor(unpack(KP.dbp.ArenaIDText_color))
-								ArenaIDText:SetText(arenaID)
-								ArenaIDText:Show()
-								if KP.dbp.ArenaIDText_HideLevel then
-									levelText:Hide()
-								end
-								if KP.dbp.ArenaIDText_HideName then
-									nameText:Hide()
+							if arenaID then
+								Plate.unitToken = "arena" .. arenaID
+								if KP.dbp.ArenaIDText_show then
+									ArenaIDText:SetTextColor(unpack(KP.dbp.ArenaIDText_color))
+									ArenaIDText:SetText(arenaID)
+									ArenaIDText:Show()
+									if KP.dbp.ArenaIDText_HideLevel then
+										levelText:Hide()
+									end
+									if KP.dbp.ArenaIDText_HideName then
+										nameText:Hide()
+									end
 								end
 							end
 						end
@@ -889,6 +948,7 @@ local function ResetPlateFlags(Plate, Virtual)
 	Plate.classKey = nil
 	Plate.totemPlateIsShown = nil
 	Plate.classPlateIsShown = nil
+	Plate.unitToken = nil
 	if Plate.totemPlate then Plate.totemPlate:Hide() end
 	if Plate.classPlate then 
 		Plate.classPlate:Hide()
