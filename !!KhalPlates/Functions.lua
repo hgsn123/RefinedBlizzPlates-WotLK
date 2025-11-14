@@ -321,28 +321,25 @@ local function SetupCastGlow(Virtual)
 		local Plate = RealPlates[Virtual]
 		castBar:HookScript("OnShow", function()
 			local unit = Plate.unitToken
-			if unit then
-				if UnitName(unit.."target") == UnitName("player") and castBarBorder:IsShown() and not UnitIsUnit("target", unit) then
-					local isFriendly = not UnitCanAttack("player", unit)
-					if isFriendly then
-						Virtual.castGlow:SetVertexColor(0.25, 0.75, 0.25)
-					else
-						Virtual.castGlow:SetVertexColor(1, 0, 0)
-					end
-					Virtual.castGlow:Show()
+			if unit and UnitIsUnit(unit.."target", "player") and not UnitIsUnit("target", unit) and castBarBorder:IsShown() then
+				if UnitCanAttack("player", unit) then
+					Virtual.castGlow:SetVertexColor(1, 0, 0)
+				else
+					Virtual.castGlow:SetVertexColor(0.25, 0.75, 0.25)
 				end
+				Virtual.castGlow:Show()
+				Virtual.castGlowIsShown = true
 			end
 		end)
 		castBar:HookScript("OnValueChanged", function()
-			local unit = Plate.unitToken
-			if unit then
-				if UnitIsUnit("target", unit) == 1 then
-					Virtual.castGlow:Hide()
-				end
+			if Virtual.castGlowIsShown and Virtual.isTarget then
+				Virtual.castGlow:Hide()
+				Virtual.castGlowIsShown = false
 			end
 		end)
 		castBar:HookScript("OnHide", function()
 			Virtual.castGlow:Hide()
+			Virtual.castGlowIsShown = false
 		end)
 	end
 end
