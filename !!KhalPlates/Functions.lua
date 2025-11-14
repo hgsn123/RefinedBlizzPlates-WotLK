@@ -247,10 +247,12 @@ local function SetupCastText(Virtual)
 	castBar.castTextDelay:SetScript("OnUpdate", function(self)
 		self:Hide()
 		local Plate = RealPlates[Virtual]
-		local unit = Plate.namePlateUnitToken or Plate.unitToken or "target"
-		local spellName 
-		local spellCasting = UnitCastingInfo(unit)
-		local spellChanneling = UnitChannelInfo(unit)
+		local unit = Plate.namePlateUnitToken or Plate.unitToken or (Virtual.isTarget and "target")
+		local spellCasting, spellChanneling, spellName
+		if unit then
+			spellCasting = UnitCastingInfo(unit)
+			spellChanneling = UnitChannelInfo(unit)
+		end
 		if spellCasting then
 			castBar.channeling = false
 			spellName = spellCasting
