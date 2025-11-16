@@ -1032,7 +1032,7 @@ end
 -- All visible enemy nameplates are iterated and the minimum distance to the next nameplate is determined.
 -- If there is no other nameplate in the immediate vicinity of the original position, the position is reset (to prevent the nameplates from rising higher and higher).
 -- Depending on whether the position is to be reset or the nameplate is above or below the closest one different functions are used for a smooth movement.
-local ySpeed = 3.5
+local ySpeed = 3
 local delta = ySpeed
 local resetSpeedFactor = 1
 local raiseSpeedFactor = 1
