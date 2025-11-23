@@ -969,8 +969,8 @@ local function UpdatePlateVisibility(Plate)
 						end
 					end
 				end
-				--------------- Show class icons in PvP instances --------------
-				if KP.inPvPInstance then
+				--------------- Show class icons in instances --------------
+				if KP.inInstance then
 					if class == "FRIENDLY PLAYER" and KP.dbp.showClassOnFriends then
 						Virtual.classIcon:SetTexture(ASSETS .. "Classes\\" .. (ClassByFriendName[name] or ""))
 						Virtual.classIcon:Show()
