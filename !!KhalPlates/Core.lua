@@ -20,11 +20,6 @@ local ClassByFriendName = KP.ClassByFriendName
 local ArenaID = KP.ArenaID
 local PartyID = KP.PartyID
 local ASSETS = KP.ASSETS
-local ClassByPlateColor = KP.ClassByPlateColor
-local ReactionByPlateColor = KP.ReactionByPlateColor
-local SetupLevelText = KP.SetupLevelText
-local SetupTotemPlate = KP.SetupTotemPlate
-local SetupClassPlate = KP.SetupClassPlate
 local UpdateTarget = KP.UpdateTarget
 local SetupKhalPlate = KP.SetupKhalPlate
 local ForceLevelHide = KP.ForceLevelHide
@@ -161,8 +156,8 @@ do
 				if Plate.totemPlateIsShown then
 					SetFrameLevel(Plate.totemPlate, Index * PlateLevels)
 				end
-				if Plate.classPlateIsShown then
-					SetFrameLevel(Plate.classPlate, Index * PlateLevels + 1)
+				if Plate.specialPlateIsShown then
+					SetFrameLevel(Plate.specialPlate, Index * PlateLevels + 1)
 				end
 				BGHframe = Virtual.BGHframe
 				if BGHframe then

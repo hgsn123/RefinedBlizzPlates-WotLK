@@ -160,16 +160,16 @@ local function SetupArenaIDText(healthBar)
 end
 
 local function UpdateSpecialHealthText(healthText, percent)
-	local r, g, b = 1, 1, 0
-	if percent <= 15 then
-		g = 0
-	elseif percent < 50 then
-		g = (percent - 15) / 35
-	else
-		r = 1 - (percent - 50) / 50
-	end
-	healthText:SetText("<" .. percent .. "%>")
-	healthText:SetTextColor(r, g, b)
+    local r, g, b = 1, 1, 0
+    if percent <= 15 then
+        g = 0
+    elseif percent < 60 then
+        g = (percent - 15) / 45
+    else
+        r = 1 - (percent - 60) / 40
+    end
+    healthText:SetText("<" .. percent .. "%>")
+    healthText:SetTextColor(r, g, b)
 end
 
 local function UpdateHealthTextValue(healthBar)
@@ -183,15 +183,15 @@ local function UpdateHealthTextValue(healthBar)
 		if percent < 100 and percent > 0 then
 			healthBar.healthText:SetText(percent .. "%")
 			if Plate.SpecialHealthTextIsShown then
-				UpdateSpecialHealthText(Plate.classPlate.healthText, percent)
+				UpdateSpecialHealthText(Plate.specialPlate.healthText, percent)
 			end
 		else
 			healthBar.healthText:SetText("")
-			if Plate.SpecialHealthTextIsShown then Plate.classPlate.healthText:SetText("") end
+			if Plate.SpecialHealthTextIsShown then Plate.specialPlate.healthText:SetText("") end
 		end
 	else
 		healthBar.healthText:SetText("")
-		if Plate.SpecialHealthTextIsShown then Plate.classPlate.healthText:SetText("") end
+		if Plate.SpecialHealthTextIsShown then Plate.specialPlate.healthText:SetText("") end
 	end
 end
 
@@ -264,7 +264,7 @@ local function SetupCastText(Virtual)
 	castBar.castTextDelay:SetScript("OnUpdate", function(self)
 		self:Hide()
 		local Plate = RealPlates[Virtual]
-		if not Plate.classPlateIsShown then
+		if not Plate.specialPlateIsShown then
 			local unit = Plate.namePlateUnitToken or Plate.unitToken or (Virtual.isTarget and "target")
 			local spellCasting, spellChanneling, spellName
 			if unit then
@@ -501,90 +501,143 @@ local function SetupTotemPlate(Plate)
 	SetupTotemIcon(Plate)
 end
 
-local function SetupClassPlateIcon(Plate)
-	if not Plate.classPlate then return end
-	Plate.classPlate:SetPoint("TOP", Plate, "TOP", 0, KP.dbp.classPlate_offset)
-	Plate.classPlate:SetSize(KP.dbp.classPlate_iconSize, KP.dbp.classPlate_iconSize)
-	Plate.classPlate.icon:SetSize(KP.dbp.classPlate_iconSize, KP.dbp.classPlate_iconSize)
-	Plate.classPlate.nameText:SetFont(KP.LSM:Fetch("font", KP.dbp.classPlate_textFont), KP.dbp.classPlate_textSize, KP.dbp.classPlate_textOutline)
-	Plate.classPlate.healthText:SetFont(KP.LSM:Fetch("font", KP.dbp.classPlate_textFont), KP.dbp.classPlate_textSize - 3, KP.dbp.classPlate_textOutline)
-	Plate.classPlate.raidTargetIcon:SetSize(KP.dbp.classPlate_raidTargetSize, KP.dbp.classPlate_raidTargetSize)
+local function UpdateSpecialPlate(Plate)
+	if not Plate.specialPlate then return end
+	Plate.specialPlate.nameText:SetFont(KP.LSM:Fetch("font", KP.dbp.specialPlate_textFont), KP.dbp.specialPlate_textSize, KP.dbp.specialPlate_textOutline)
+	Plate.specialPlate.nameText:SetPoint("TOP", 0, KP.dbp.specialPlate_offset)
+	Plate.specialPlate.healthText:SetFont(KP.LSM:Fetch("font", KP.dbp.specialPlate_textFont), KP.dbp.specialPlate_healthTextSize, KP.dbp.specialPlate_textOutline)
+	Plate.specialPlate.healthText:ClearAllPoints()
+	if KP.dbp.specialPlate_healthTextAnchor == "Left" then
+		Plate.specialPlate.healthText:SetPoint("RIGHT", Plate.specialPlate.nameText, "LEFT", KP.dbp.specialPlate_healthTextOffsetX, KP.dbp.specialPlate_healthTextOffsetY)
+	elseif KP.dbp.specialPlate_healthTextAnchor == "Right" then
+		Plate.specialPlate.healthText:SetPoint("LEFT", Plate.specialPlate.nameText, "RIGHT", KP.dbp.specialPlate_healthTextOffsetX, KP.dbp.specialPlate_healthTextOffsetY)
+	else
+		Plate.specialPlate.healthText:SetPoint("TOP", Plate.specialPlate.nameText, "BOTTOM", KP.dbp.specialPlate_healthTextOffsetX, KP.dbp.specialPlate_healthTextOffsetY)
+	end	
+	Plate.specialPlate.raidTargetIcon:SetSize(KP.dbp.specialPlate_raidTargetIconSize, KP.dbp.specialPlate_raidTargetIconSize)
+	Plate.specialPlate.raidTargetIcon:ClearAllPoints()
+	if KP.dbp.specialPlate_raidTargetIconAnchor == "Left" then
+		Plate.specialPlate.raidTargetIcon:SetPoint("RIGHT", Plate.specialPlate.nameText, "LEFT", KP.dbp.specialPlate_raidTargetIconOffsetX, KP.dbp.specialPlate_raidTargetIconOffsetY)
+	elseif KP.dbp.specialPlate_raidTargetIconAnchor == "Right" then
+		Plate.specialPlate.raidTargetIcon:SetPoint("LEFT", Plate.specialPlate.nameText, "RIGHT", KP.dbp.specialPlate_raidTargetIconOffsetX, KP.dbp.specialPlate_raidTargetIconOffsetY)
+	else
+		Plate.specialPlate.raidTargetIcon:SetPoint("BOTTOM", Plate.specialPlate.nameText, "TOP", KP.dbp.specialPlate_raidTargetIconOffsetX, KP.dbp.specialPlate_raidTargetIconOffsetY)
+	end	
+	Plate.specialPlate.classIcon:SetSize(KP.dbp.specialPlate_classIconSize, KP.dbp.specialPlate_classIconSize)
+	Plate.specialPlate.classIcon:ClearAllPoints()
+	if KP.dbp.specialPlate_classIconAnchor == "Left" then
+		Plate.specialPlate.classIcon:SetPoint("RIGHT", Plate.specialPlate.nameText, "LEFT", KP.dbp.specialPlate_classIconOffsetX, KP.dbp.specialPlate_classIconOffsetY)
+	elseif KP.dbp.specialPlate_classIconAnchor == "Right" then
+		Plate.specialPlate.classIcon:SetPoint("LEFT", Plate.specialPlate.nameText, "RIGHT", KP.dbp.specialPlate_classIconOffsetX, KP.dbp.specialPlate_classIconOffsetY)
+	else
+		Plate.specialPlate.classIcon:SetPoint("BOTTOM", Plate.specialPlate.nameText, "TOP", KP.dbp.specialPlate_classIconOffsetX, KP.dbp.specialPlate_classIconOffsetY)
+	end
 end
 
-local function SetupClassPlate(Plate)
-	if Plate.classPlate then return end
-	Plate.classPlate = CreateFrame("Frame", nil, WorldFrame)
-	Plate.classPlate:Hide()
-	Plate.classPlate.nameText = Plate.classPlate:CreateFontString(nil, "OVERLAY")
-	Plate.classPlate.nameText:SetPoint("TOP")
-	Plate.classPlate.nameText:SetShadowOffset(0.5, -0.5)
-	Plate.classPlate.healthText = Plate.classPlate:CreateFontString(nil, "OVERLAY")
-	Plate.classPlate.healthText:SetPoint("TOP", Plate.classPlate.nameText, "BOTTOM", 0, -1.5)
-	Plate.classPlate.healthText:SetShadowOffset(0.5, -0.5)
-	Plate.classPlate.icon = Plate.classPlate:CreateTexture(nil, "ARTWORK")
-	Plate.classPlate.icon:SetPoint("BOTTOM", Plate.classPlate, "TOP")
-	Plate.classPlate.raidTargetIcon = Plate.classPlate:CreateTexture(nil, "BORDER")
-	Plate.classPlate.raidTargetIcon:SetPoint("BOTTOM", Plate.classPlate, "TOP", 0, 2)
-	Plate.classPlate.raidTargetIcon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
-	Plate.classPlate.raidTargetIcon:Hide()
-	SetupClassPlateIcon(Plate)
+local function SetupSpecialPlate(Plate)
+	if Plate.specialPlate then return end
+	Plate.specialPlate = CreateFrame("Frame", nil, WorldFrame)
+	Plate.specialPlate:SetSize(1, 1)
+	Plate.specialPlate:SetPoint("TOP", Plate)
+	Plate.specialPlate:Hide()
+	Plate.specialPlate.nameText = Plate.specialPlate:CreateFontString(nil, "OVERLAY")
+	Plate.specialPlate.nameText:SetShadowOffset(0.5, -0.5)
+	Plate.specialPlate.healthText = Plate.specialPlate:CreateFontString(nil, "OVERLAY")
+	Plate.specialPlate.healthText:SetShadowOffset(0.5, -0.5)
+	Plate.specialPlate.healthText:Hide()
+	Plate.specialPlate.raidTargetIcon = Plate.specialPlate:CreateTexture(nil, "BORDER")
+	Plate.specialPlate.raidTargetIcon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
+	Plate.specialPlate.raidTargetIcon:Hide()
+	Plate.specialPlate.classIcon = Plate.specialPlate:CreateTexture(nil, "ARTWORK")
+	Plate.specialPlate.classIcon:Hide()
+	UpdateSpecialPlate(Plate)
 end
 
-local function CheckClassPlate(Plate)
+local function CheckSpecialPlate(Plate)
 	local Virtual = VirtualPlates[Plate]
-	local classPlateCheck
-	---------------------- Special Class Name/Icon ----------------------
-	if not Virtual.isTarget then
-		if (KP.inBG and KP.dbp.classPlate_showIconInBG) 
-		or (KP.inArena and KP.dbp.classPlate_showIconInArena) 
-		or (KP.inPvEInstance and KP.dbp.classPlate_showIconInPvE) then
-			if not Plate.classPlate then
-				SetupClassPlate(Plate)
-			end
-			local specialIcon = Plate.classPlate.icon
-			local healthBarHighlight = Virtual.healthBarHighlight
-			specialIcon:SetTexture(ASSETS .. "Classes\\" .. (ClassByFriendName[Virtual.nameString] or ""))
-			specialIcon:Show()
-			healthBarHighlight:SetTexture(nil)
-			classPlateCheck = true
+	if ((KP.inBG and KP.dbp.specialPlate_showInBG) 
+	or (KP.inArena and KP.dbp.specialPlate_showInArena) 
+	or (KP.inPvEInstance and KP.dbp.specialPlate_showInPvE))
+	and not Virtual.isTarget then
+		if not Plate.specialPlate then
+			SetupSpecialPlate(Plate)
 		end
-		if (KP.inBG and KP.dbp.classPlate_showNameInBG) 
-		or (KP.inArena and KP.dbp.classPlate_showNameInArena) 
-		or (KP.inPvEInstance and KP.dbp.classPlate_showNameInPvE) then
-			if not Plate.classPlate then
-				SetupClassPlate(Plate)
-			end
-			local specialNameText = Plate.classPlate.nameText
-			specialNameText:SetText(Virtual.nameString)
-			local classColor = Plate.classColor
-			if classColor and KP.dbp.classPlate_classColors then
-				specialNameText:SetTextColor(classColor.r, classColor.g, classColor.b)
+		local specialPlate = Plate.specialPlate
+		local classColor = Plate.classColor
+		local specialNameText = specialPlate.nameText
+		if classColor and KP.dbp.specialPlate_classColors then
+			specialNameText:SetTextColor(classColor.r, classColor.g, classColor.b)
+		else
+			specialNameText:SetTextColor(unpack(KP.dbp.specialPlate_textColor))
+		end
+		specialNameText:SetText(Virtual.nameString)
+		local healthBarHighlight = Virtual.healthBarHighlight
+		healthBarHighlight:SetTexture(ASSETS .. "PlateBorders\\SpecialPlate-MouseoverGlow")
+		healthBarHighlight:ClearAllPoints()
+		healthBarHighlight:SetPoint("CENTER", specialNameText, 0, -1.3)
+		healthBarHighlight:SetSize(specialNameText:GetWidth() + 30, specialNameText:GetHeight() + 20)
+		if KP.dbp.specialPlate_showHealthText then
+			specialPlate.healthText:Show()
+			Plate.SpecialHealthTextIsShown = true
+			UpdateHealthTextValue(Virtual.healthBar)
+		end
+		if Plate.hasRaidTarget and KP.dbp.specialPlate_showRaidTarget then
+			specialPlate.raidTargetIcon:SetTexCoord(Virtual.raidTargetIcon:GetTexCoord())
+			specialPlate.raidTargetIcon:Show()
+		end
+		if KP.dbp.specialPlate_showClassIcon then
+			specialPlate.classIcon:SetTexture(ASSETS .. "Classes\\" .. (ClassByFriendName[Virtual.nameString] or ""))
+			specialPlate.classIcon:Show()
+		end
+		specialPlate:Show()
+		Plate.specialPlateIsShown = true
+		Virtual.healthBar:Hide()
+		Virtual.castBar:Hide()
+		Virtual.castBarBorder:Hide()
+		Virtual.shieldCastBarBorder:Hide()
+		Virtual.spellIcon:Hide()
+		Virtual.levelText:Hide()
+		Virtual.raidTargetIcon:Hide()
+		if Virtual.BGHframe then
+			if KP.dbp.specialPlate_BGHiconAnchor == "Left" then
+				Virtual.BGHframe:ModifyIcon(true, specialPlate, KP.dbp.specialPlate_BGHiconSize, "RIGHT", specialNameText, "LEFT", KP.dbp.specialPlate_BGHiconOffsetX, KP.dbp.specialPlate_BGHiconOffsetY)
+			elseif KP.dbp.specialPlate_BGHiconAnchor == "Right" then
+				Virtual.BGHframe:ModifyIcon(true, specialPlate, KP.dbp.specialPlate_BGHiconSize, "LEFT", specialNameText, "RIGHT", KP.dbp.specialPlate_BGHiconOffsetX, KP.dbp.specialPlate_BGHiconOffsetY)
 			else
-				specialNameText:SetTextColor(unpack(KP.dbp.classPlate_textColor))
+				Virtual.BGHframe:ModifyIcon(true, specialPlate, KP.dbp.specialPlate_BGHiconSize, "BOTTOM", specialNameText, "TOP", KP.dbp.specialPlate_BGHiconOffsetX, KP.dbp.specialPlate_BGHiconOffsetY)
 			end
-			specialNameText:Show()
-			if KP.dbp.classPlate_showHealthText then
-				Plate.classPlate.healthText:Show()
-				Plate.SpecialHealthTextIsShown = true
-				UpdateHealthTextValue(Virtual.healthBar)
+		elseif Plate.firstProcessing then
+			if KP.dbp.specialPlate_BGHiconAnchor == "Left" then
+				Virtual.shouldModifyBGH = {true, specialPlate, KP.dbp.specialPlate_BGHiconSize, "RIGHT", specialNameText, "LEFT", KP.dbp.specialPlate_BGHiconOffsetX, KP.dbp.specialPlate_BGHiconOffsetY}
+			elseif KP.dbp.specialPlate_BGHiconAnchor == "Right" then
+				Virtual.shouldModifyBGH = {true, specialPlate, KP.dbp.specialPlate_BGHiconSize, "LEFT", specialNameText, "RIGHT", KP.dbp.specialPlate_BGHiconOffsetX, KP.dbp.specialPlate_BGHiconOffsetY}
 			else
-				Plate.classPlate.healthText:Hide()
-				Plate.SpecialHealthTextIsShown = nil
+				Virtual.shouldModifyBGH = {true, specialPlate, KP.dbp.specialPlate_BGHiconSize, "BOTTOM", specialNameText, "TOP", KP.dbp.specialPlate_BGHiconOffsetX, KP.dbp.specialPlate_BGHiconOffsetY}
 			end
-			if Plate.hasRaidTarget and KP.dbp.classPlate_showRaidTarget then
-				local classPlateRaidTarget = Plate.classPlate.raidTargetIcon
-				classPlateRaidTarget:Show()
-				classPlateRaidTarget:SetTexCoord(Virtual.raidTargetIcon:GetTexCoord())
-			end
-			local healthBarHighlight = Virtual.healthBarHighlight
-			healthBarHighlight:SetTexture(ASSETS .. "PlateBorders\\ClassPlate-MouseoverGlow")
-			healthBarHighlight:ClearAllPoints()
-			healthBarHighlight:SetPoint("CENTER", specialNameText, 0, -1.3)
-			healthBarHighlight:SetSize(specialNameText:GetWidth() + 30, specialNameText:GetHeight() + 20)
-			classPlateCheck = true
+		end
+	else
+		Virtual.healthBar:Show()
+		UpdateMouseoverGlow(Virtual)
+		if Plate.hasRaidTarget then
+			Virtual.raidTargetIcon:Show()
+		end
+		if not KP.dbp.levelText_hide and not (KP.inArena and KP.dbp.PartyIDText_show and KP.dbp.PartyIDText_HideLevel) then
+			SetupLevelText(Virtual)
+			Virtual.levelText:Show()
+		end
+		local specialPlate = Plate.specialPlate
+		if specialPlate then
+			specialPlate:Hide()
+			specialPlate.healthText:Hide()
+			specialPlate.raidTargetIcon:Hide()
+			specialPlate.classIcon:Hide()
+		end
+		Plate.specialPlateIsShown = nil
+		Plate.SpecialHealthTextIsShown = nil
+		if Virtual.BGHframe then
+			Virtual.BGHframe:ModifyIcon()
 		end
 	end
-	return classPlateCheck
 end
 
 local function SetupTargetHandler(Plate)
@@ -604,49 +657,7 @@ local function SetupTargetHandler(Plate)
 		end
 		if Virtual.isShown then
 			if Plate.classKey == "FRIENDLY PLAYER" and KP.inInstance then	
-				local classPlateCheck = CheckClassPlate(Plate)
-				if classPlateCheck then
-					Virtual.healthBar:Hide()
-					Virtual.castBar:Hide()
-					Virtual.castBarBorder:Hide()
-					Virtual.shieldCastBarBorder:Hide()
-					Virtual.spellIcon:Hide()
-					Virtual.levelText:Hide()
-					if Plate.hasRaidTarget then
-						Virtual.raidTargetIcon:Hide()
-					end
-					Plate.classPlate:Show()
-					Plate.classPlateIsShown = true
-					if Virtual.BGHframe then
-						Virtual.BGHframe:SetParent(Plate.classPlate)
-						Virtual.BGHframe:SetScale(Virtual:GetScale())
-						Virtual.BGHframe:UpdateAnchor()
-					end
-				else
-					UpdateMouseoverGlow(Virtual)
-					if Plate.hasRaidTarget then
-						Virtual.raidTargetIcon:Show()
-						if Plate.classPlate then Plate.classPlate.raidTargetIcon:Hide() end
-					end
-					if not KP.dbp.levelText_hide and not (KP.inArena and KP.dbp.PartyIDText_show and KP.dbp.PartyIDText_HideLevel) then
-						SetupLevelText(Virtual)
-						Virtual.levelText:Show()
-					end
-					Virtual.healthBar:Show()
-					if Plate.classPlate then 
-						Plate.classPlate:Hide()
-						Plate.classPlate.nameText:Hide()
-						Plate.classPlate.healthText:Hide()
-						Plate.classPlate.icon:Hide()
-					end
-					Plate.classPlateIsShown = nil
-					Plate.SpecialHealthTextIsShown = nil
-					if Virtual.BGHframe then
-						Virtual.BGHframe:SetParent(Virtual)
-						Virtual.BGHframe:SetScale(1)
-						Virtual.BGHframe:UpdateAnchor()
-					end
-				end
+				CheckSpecialPlate(Plate)
 			end
 			if not Plate.isFriendly and not KP.dbp.stackingEnabled then
 				if (Virtual.isTarget and KP.dbp.clampTarget) or (Plate.isBoss and KP.dbp.clampBoss and KP.inPvEInstance) then
@@ -658,6 +669,7 @@ local function SetupTargetHandler(Plate)
 				end				
 			end
 		end
+		Plate.firstProcessing = nil
 	end)
 end
 
@@ -698,7 +710,6 @@ local function SetupKhalPlate(Virtual)
 	SetupEliteIcon(Virtual)
 	SetupClassIcon(Virtual)
 	UpdateCastBorder(Virtual)
-	SetupTargetHandler(RealPlates[Virtual])
 	healthBarBorder:Hide()
 	nameText:Hide()
 	castBarBorder:SetTexture(ASSETS .. "PlateBorders\\CastBar-Border")
@@ -716,6 +727,9 @@ local function SetupKhalPlate(Virtual)
 	Virtual.castBar.barTex:SetDrawLayer("BORDER")
 	Virtual.castBar.barTex:SetTexture(KP.LSM:Fetch("statusbar", KP.dbp.castBar_Tex))
 	Virtual.healthBar.nameText:SetText(nameText:GetText())
+	local Plate = RealPlates[Virtual]
+	Plate.firstProcessing = true
+	SetupTargetHandler(Plate)
 end
 
 local firstChecked
@@ -987,23 +1001,23 @@ local function ResetPlateFlags(Plate)
 	Plate.unitToken = nil
 	Plate.totemPlateIsShown = nil
 	if Plate.totemPlate then Plate.totemPlate:Hide() end
-	if Plate.classPlate then 
-		Plate.classPlate:Hide()
-		Plate.classPlate.nameText:Hide()
-		Plate.classPlate.healthText:Hide()
-		Plate.classPlate.icon:Hide()
-		Plate.classPlate.raidTargetIcon:Hide()
+	local specialPlate = Plate.specialPlate
+	if specialPlate then
+		specialPlate:Hide()
+		specialPlate.healthText:Hide()
+		specialPlate.raidTargetIcon:Hide()
+		specialPlate.classIcon:Hide()
 	end
-	Plate.classPlateIsShown = nil
+	Plate.specialPlateIsShown = nil
 	Plate.SpecialHealthTextIsShown = nil
 	Plate.hasRaidTarget = nil
 	KP.StackablePlates[Plate] = nil
 	Plate:SetClampedToScreen(false)
 	Plate:SetClampRectInsets(0, 0, 0, 0)
 	if Virtual.BGHframe then
-		Virtual.BGHframe:SetParent(Virtual)
-		Virtual.BGHframe:SetScale(1)
-		Virtual.BGHframe:UpdateAnchor()
+		Virtual.BGHframe:ModifyIcon()
+	else
+		Virtual.shouldModifyBGH = nil
 	end
 end
 
@@ -1284,7 +1298,13 @@ function KP:UpdateAllIcons()
 		SetupEliteIcon(Virtual)
 		SetupClassIcon(Virtual)
 		SetupTotemIcon(Plate)
-		SetupClassPlateIcon(Plate)
+		UpdateSpecialPlate(Plate)
+	end
+end
+
+function KP:UpdateAllSpecialPlates()
+	for Plate in pairs(VirtualPlates) do
+		UpdateSpecialPlate(Plate)
 	end
 end
 
@@ -1365,6 +1385,7 @@ function KP:UpdateProfile()
 	self:UpdateAllHealthBars()
 	self:UpdateAllCastBars()
 	self:UpdateAllIcons()
+	self:UpdateAllSpecialPlates()
 	self:UpdateAllGlows()
 	self:UpdateAllCastBarBorders()
 	self:BuildBlacklistUI()
@@ -1384,11 +1405,6 @@ KP.ClassByFriendName = ClassByFriendName
 KP.ArenaID = ArenaID
 KP.PartyID = PartyID
 KP.ASSETS = ASSETS
-KP.ClassByPlateColor = ClassByPlateColor
-KP.ReactionByPlateColor = ReactionByPlateColor
-KP.SetupLevelText = SetupLevelText
-KP.SetupTotemPlate = SetupTotemPlate
-KP.SetupClassPlate = SetupClassPlate
 KP.UpdateTarget = UpdateTarget
 KP.SetupKhalPlate = SetupKhalPlate
 KP.ForceLevelHide = ForceLevelHide
