@@ -756,6 +756,20 @@ local function ForceLevelHide()
 	ForceLevelHideHandler:Show()
 end
 
+local delayedUASP = CreateFrame("Frame")
+delayedUASP:Hide()
+delayedUASP:SetScript("OnUpdate", function(self, elapsed)
+    self.timeLeft = self.timeLeft - elapsed
+    if self.timeLeft <= 0 then
+        self:Hide()
+        KP:UpdateAllShownPlates()
+    end
+end)
+local function DelayedUpdateAllShownPlates(delay)
+    delayedUASP.timeLeft = delay or 0.2
+    delayedUASP:Show()
+end
+
 local function CheckDominateMind()
     local i = 1
     while true do
@@ -773,7 +787,7 @@ local function CheckDominateMind()
     if KP.DominateMind then
         KP.DominateMind = nil
         SetUIVisibility(true)
-		KP:DelayedUpdateAllShownPlates(0.2)
+		DelayedUpdateAllShownPlates(0.2)
     end
 end
 
@@ -1362,20 +1376,6 @@ function KP:UpdateAllShownPlates()
 			UpdateHitboxOutOfCombat(Plate)
 		end
 	end
-end
-
-KP.delayedUASP = CreateFrame("Frame")
-KP.delayedUASP:Hide()
-KP.delayedUASP:SetScript("OnUpdate", function(self, elapsed)
-	self.timeLeft = self.timeLeft - elapsed
-	if self.timeLeft <= 0 then
-		self:Hide()
-		KP:UpdateAllShownPlates()
-	end
-end)
-function KP:DelayedUpdateAllShownPlates(delay)
-	KP.delayedUASP.timeLeft = delay or 0.2
-	KP.delayedUASP:Show()
 end
 
 function KP:UpdateHitboxAttributes()
