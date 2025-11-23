@@ -482,7 +482,7 @@ function EventHandler:PARTY_MEMBERS_CHANGED()
 end
 
 function EventHandler:UNIT_FACTION(event, unit)
-	if unit == "player" then
+	if unit == "player" and not KP.inInstance then
 		DelayedUpdateClassColorNames()
 	end
 end
