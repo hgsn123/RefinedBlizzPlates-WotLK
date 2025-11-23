@@ -769,7 +769,7 @@ delayedSUIV:SetScript("OnUpdate", function(self, elapsed)
     end
 end)
 local function DelayedSetUIVisibility()
-    delayedSUIV.timeLeft = 0.1
+    delayedSUIV.timeLeft = 0.2
     delayedSUIV:Show()
 end
 
