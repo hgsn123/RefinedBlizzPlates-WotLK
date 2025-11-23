@@ -773,7 +773,7 @@ local function CheckDominateMind()
     if KP.DominateMind then
         KP.DominateMind = nil
         SetUIVisibility(true)
-		KP:UpdateAllShownPlates()
+		KP:DelayedUpdateAllShownPlates()
     end
 end
 
@@ -1362,6 +1362,20 @@ function KP:UpdateAllShownPlates()
 			UpdateHitboxOutOfCombat(Plate)
 		end
 	end
+end
+
+KP.delayedUASP = CreateFrame("Frame")
+KP.delayedUASP:Hide()
+KP.delayedUASP:SetScript("OnUpdate", function(self, elapsed)
+	self.timeLeft = self.timeLeft - elapsed
+	if self.timeLeft <= 0 then
+		self:Hide()
+		KP:UpdateAllShownPlates()
+	end
+end)
+function KP:DelayedUpdateAllShownPlates()
+	KP.delayedUASP.timeLeft = 0.2
+	KP.delayedUASP:Show()
 end
 
 function KP:UpdateHitboxAttributes()
