@@ -16,35 +16,6 @@ KP.dbp.LDWfix = false      -- Hide nameplates when controlled by LDW
 KP.dbp.clampTarget = false
 KP.dbp.clampBoss = false
 KP.dbp.upperborder = 35
--- Special Plate
-KP.dbp.specialPlate_showInBG = false
-KP.dbp.specialPlate_showInArena = false
-KP.dbp.specialPlate_showInPvE = true
-KP.dbp.specialPlate_textFont = "Friz Quadrata TT"
-KP.dbp.specialPlate_textSize = 14
-KP.dbp.specialPlate_textOutline = "OUTLINE"
-KP.dbp.specialPlate_textColor = {1, 1, 1} -- white
-KP.dbp.specialPlate_classColors = true
-KP.dbp.specialPlate_offset = 0
-KP.dbp.specialPlate_showHealthText = false
-KP.dbp.specialPlate_healthTextSize = 11
-KP.dbp.specialPlate_healthTextAnchor = "Bottom"
-KP.dbp.specialPlate_healthTextOffsetX = 0
-KP.dbp.specialPlate_healthTextOffsetY = 0
-KP.dbp.specialPlate_showRaidTarget = false
-KP.dbp.specialPlate_raidTargetIconSize = 30
-KP.dbp.specialPlate_raidTargetIconAnchor = "Top"
-KP.dbp.specialPlate_raidTargetIconOffsetX = 0
-KP.dbp.specialPlate_raidTargetIconOffsetY = 0
-KP.dbp.specialPlate_showClassIcon = false
-KP.dbp.specialPlate_classIconSize = 32
-KP.dbp.specialPlate_classIconAnchor = "Top"
-KP.dbp.specialPlate_classIconOffsetX = 0
-KP.dbp.specialPlate_classIconOffsetY = 0
-KP.dbp.specialPlate_BGHiconSize = 36
-KP.dbp.specialPlate_BGHiconAnchor = "Top"
-KP.dbp.specialPlate_BGHiconOffsetX = 0
-KP.dbp.specialPlate_BGHiconOffsetY = 0
 -- Enhanced Stacking
 KP.dbp.stackingEnabled = false
 KP.dbp.xspace = 130
@@ -143,14 +114,43 @@ KP.dbp.raidTargetIcon_size = 27
 KP.dbp.raidTargetIcon_anchor = "Right"
 KP.dbp.raidTargetIcon_offsetX = 0
 KP.dbp.raidTargetIcon_offsetY = 0
--- Class Icon (in Arenas and BGs)
+-- Class Icon
 KP.dbp.showClassOnFriends = true
 KP.dbp.showClassOnEnemies = true
 KP.dbp.classIcon_size = 26
 KP.dbp.classIcon_anchor = "Left"
 KP.dbp.classIcon_offsetX = 0
 KP.dbp.classIcon_offsetY = 0
--- Totem Plates
+-- Barless Plate
+KP.dbp.specialPlate_showInBG = false
+KP.dbp.specialPlate_showInArena = false
+KP.dbp.specialPlate_showInPvE = true
+KP.dbp.specialPlate_textFont = "Friz Quadrata TT"
+KP.dbp.specialPlate_textSize = 14
+KP.dbp.specialPlate_textOutline = "OUTLINE"
+KP.dbp.specialPlate_textColor = {1, 1, 1} -- white
+KP.dbp.specialPlate_classColors = true
+KP.dbp.specialPlate_offset = 0
+KP.dbp.specialPlate_showHealthText = false
+KP.dbp.specialPlate_healthTextSize = 11
+KP.dbp.specialPlate_healthTextAnchor = "Bottom"
+KP.dbp.specialPlate_healthTextOffsetX = 0
+KP.dbp.specialPlate_healthTextOffsetY = 0
+KP.dbp.specialPlate_showRaidTarget = false
+KP.dbp.specialPlate_raidTargetIconSize = 30
+KP.dbp.specialPlate_raidTargetIconAnchor = "Top"
+KP.dbp.specialPlate_raidTargetIconOffsetX = 0
+KP.dbp.specialPlate_raidTargetIconOffsetY = 0
+KP.dbp.specialPlate_showClassIcon = false
+KP.dbp.specialPlate_classIconSize = 32
+KP.dbp.specialPlate_classIconAnchor = "Top"
+KP.dbp.specialPlate_classIconOffsetX = 0
+KP.dbp.specialPlate_classIconOffsetY = 0
+KP.dbp.specialPlate_BGHiconSize = 36
+KP.dbp.specialPlate_BGHiconAnchor = "Top"
+KP.dbp.specialPlate_BGHiconOffsetX = 0
+KP.dbp.specialPlate_BGHiconOffsetY = 0
+-- Totem Plate
 KP.dbp.totemSize = 24 -- Size of the totem (or NPC) icon replacing the nameplate
 KP.dbp.totemOffset = 0 -- Vertical offset for totem icon
 KP.dbp.TotemsCheck = { -- 1 = Icon, 0 = Hiden, false = nameplate
@@ -1613,7 +1613,7 @@ KP.MainOptionTable = {
 		},
 		SpecialPlate = {
 			order = 6,
-			name = "Special Plate",
+			name = "Barless Plate",
 			type = "group",
 			set = function(info, val)
 				KP.dbp[info[#info]] = val
@@ -1625,27 +1625,27 @@ KP.MainOptionTable = {
 				specialPlate_Header = {
 					order = 2,
 					type = "header",
-					name = "Special Plate",
+					name = "Barless Plate Enabling",
 				},
 				lineBreak2 = {order = 3, type = "description", name = ""},
 				lineBreak3 = {order = 4, type = "description", name = ""},
 				specialPlate_showInPvE = {
 					order = 5,
 					type = "toggle",
-					name = "Show in PvE",
-					desc = "This will replace friendly player nameplates with a simplified name-only frame and anchored icons.",
+					name = "Enable in PvE",
+					desc = "Replaces friendly player nameplates with a barless layout: name text and anchored indicators.",
 				},
 				specialPlate_showInBG = {
 					order = 6,
 					type = "toggle",
-					name = "Show in BGs",
-					desc = "This will replace friendly player nameplates with a simplified name-only frame and anchored icons.",
+					name = "Enable in BGs",
+					desc = "Replaces friendly player nameplates with a barless layout: name text and anchored indicators.",
 				},
 				specialPlate_showInArena = {
 					order = 7,
 					type = "toggle",
-					name = "Show in Arenas",
-					desc = "This will replace friendly player nameplates with a simplified name-only frame and anchored icons.",
+					name = "Enable in Arenas",
+					desc = "Replaces friendly player nameplates with a barless layout: name text and anchored indicators.",
 				},
 				lineBreak4 = {order = 8, type = "description", name = ""},
 				lineBreak5 = {order = 9, type = "description", name = ""},
@@ -1695,7 +1695,7 @@ KP.MainOptionTable = {
 				specialPlate_textColor = {
 					order = 15,
 					type = "color",
-					name = "Base name color",
+					name = "Text color",
 					get = function(info)
 						local c = KP.dbp[info[#info]]
 						return c[1], c[2], c[3]
@@ -1712,7 +1712,7 @@ KP.MainOptionTable = {
 				specialPlate_classColors = {
 					order = 16,
 					type = "toggle",
-					name = "Name with class color",
+					name = "Use class color",
 					disabled = function()
 						return not (KP.dbp.specialPlate_showInPvE or KP.dbp.specialPlate_showInBG or KP.dbp.specialPlate_showInArena)
 					end,
