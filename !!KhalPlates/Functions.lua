@@ -850,15 +850,6 @@ local function UpdateClassColorNames()
 		Virtual.nameTextIsYellow = false
 	end
 end
-local DelayedUpdateClassColorNamesHandler = CreateFrame("Frame")
-DelayedUpdateClassColorNamesHandler:Hide()
-DelayedUpdateClassColorNamesHandler:SetScript("OnUpdate", function(self)
-	self:Hide()
-	UpdateClassColorNames()
-end)
-local function DelayedUpdateClassColorNames()
-	DelayedUpdateClassColorNamesHandler:Show()
-end
 
 local function UpdatePlateVisibility(Plate)
 	-------- Sets the healthBar texture and text colors based on unit type --------
@@ -1050,6 +1041,16 @@ local function UpdateHitboxOutOfCombat(Plate)
 			Plate:SetSize(NP_WIDTH * KP.dbp.globalScale, NP_HEIGHT * KP.dbp.globalScale)
 		end
 	end
+end
+
+local DelayedUpdateAllShownPlatesHandler = CreateFrame("Frame")
+DelayedUpdateAllShownPlatesHandler:Hide()
+DelayedUpdateAllShownPlatesHandler:SetScript("OnUpdate", function(self)
+	self:Hide()
+	KP:UpdateAllShownPlates()
+end)
+local function DelayedUpdateAllShownPlates()
+	DelayedUpdateAllShownPlatesHandler:Show()
 end
 
 -- SecureHandlers System: Manages nameplate hitbox resizing while in combat
@@ -1425,7 +1426,7 @@ KP.CheckDominateMind = CheckDominateMind
 KP.UpdateGroupInfo = UpdateGroupInfo
 KP.UpdateArenaInfo = UpdateArenaInfo
 KP.UpdateClassColorNames = UpdateClassColorNames
-KP.DelayedUpdateClassColorNames = DelayedUpdateClassColorNames
+KP.DelayedUpdateAllShownPlates = DelayedUpdateAllShownPlates
 KP.UpdatePlateVisibility = UpdatePlateVisibility
 KP.ResetPlateFlags = ResetPlateFlags
 KP.UpdateHitboxOutOfCombat = UpdateHitboxOutOfCombat

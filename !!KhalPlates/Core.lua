@@ -22,7 +22,7 @@ local CheckDominateMind = KP.CheckDominateMind
 local UpdateGroupInfo = KP.UpdateGroupInfo
 local UpdateArenaInfo = KP.UpdateArenaInfo
 local UpdateClassColorNames = KP.UpdateClassColorNames
-local DelayedUpdateClassColorNames = KP.DelayedUpdateClassColorNames
+local DelayedUpdateAllShownPlates = KP.DelayedUpdateAllShownPlates
 local UpdatePlateVisibility = KP.UpdatePlateVisibility
 local ResetPlateFlags = KP.ResetPlateFlags
 local UpdateHitboxOutOfCombat = KP.UpdateHitboxOutOfCombat
@@ -483,7 +483,7 @@ end
 
 function EventHandler:UNIT_FACTION(event, unit)
 	if unit == "player" and not KP.inInstance then
-		DelayedUpdateClassColorNames()
+		DelayedUpdateAllShownPlates()
 	end
 end
 
