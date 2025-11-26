@@ -22,14 +22,12 @@ local CheckDominateMind = KP.CheckDominateMind
 local UpdateGroupInfo = KP.UpdateGroupInfo
 local UpdateArenaInfo = KP.UpdateArenaInfo
 local UpdateClassColorNames = KP.UpdateClassColorNames
-local DelayedUpdateAllShownPlates = KP.DelayedUpdateAllShownPlates
-local UpdatePlateVisibility = KP.UpdatePlateVisibility
-local ResetPlateFlags = KP.ResetPlateFlags
-local UpdateHitboxOutOfCombat = KP.UpdateHitboxOutOfCombat
 local ExecuteHitboxSecureScript = KP.ExecuteHitboxSecureScript
 local InitPlatesHitboxes = KP.InitPlatesHitboxes
-local NullifyPlateHitbox = KP.NullifyPlateHitbox
-local NormalizePlateHitbox = KP.NormalizePlateHitbox
+local UpdateKhalPlate = KP.UpdateKhalPlate
+local ResetKhalPlate = KP.ResetKhalPlate
+local DelayedUpdateAllShownPlates = KP.DelayedUpdateAllShownPlates
+local HitboxAttributeUpdater = KP.HitboxAttributeUpdater
 local UpdateStacking = KP.UpdateStacking
 
 -- Local definitions
@@ -60,54 +58,28 @@ KP.playerLevel = UnitLevel("player")
 do
 	local SortOrder, Depths = {}, {}
 
-	--- If an anchor ataches to the original plate (by WoW), re-anchor to the Virtual.
-	local function ResetPoint(Plate, Virtual, Region, Point, RelativeFrame, ...)
-		if RelativeFrame == Plate then
-			local point, xOfs, yOfs = ...
-			Region:SetPoint(Point, Virtual, point, xOfs + KP.dbp.globalOffsetX + 11, yOfs + KP.dbp.globalOffsetY)
-		end
-	end
-
-	--- Re-anchors regions when a plate is shown.
-	-- WoW re-anchors most regions when it shows a nameplate, so restore those anchors to the Virtual frame.
 	local function PlateOnShow(Plate)
 		local Virtual = VirtualPlates[Plate]
 		PlatesVisible[Plate] = Virtual
 		ExistsVisiblePlates = true
 		NextUpdate = 0 -- sorts instantly
-		-- Reposition all regions
+		--- If an anchor ataches to the original plate (by WoW), re-anchor to the Virtual.
 		for Index, Region in ipairs(Plate) do
 			for Point = 1, Region:GetNumPoints() do
-				ResetPoint(Plate, Virtual, Region, Region:GetPoint(Point))
+				local point, relativeTo, relativePoint, xOfs, yOfs = Region:GetPoint(Point)
+				if relativeTo == Plate then
+					Region:SetPoint(point, Virtual, relativePoint, xOfs + KP.dbp.globalOffsetX + 11, yOfs + KP.dbp.globalOffsetY)
+				end
 			end
 		end
-		UpdatePlateVisibility(Plate) -- Updates textures, texts, icons, filters
+		UpdateKhalPlate(Plate)
 		UpdateTarget(Plate)
- 		if KP.inCombat then
-			if not Virtual.isShown or (Plate.isFriendly and KP.dbp.friendlyClickthrough and KP.inInstance) then
-				NullifyPlateHitbox()
-			else
-				NormalizePlateHitbox()
-			end
-			ExecuteHitboxSecureScript()
-		else
-			UpdateHitboxOutOfCombat(Plate)
-		end
 	end
 
-	--- Removes the plate from the visible list when hidden.
 	local function PlateOnHide(Plate)
 		PlatesVisible[Plate] = nil
 		ExistsVisiblePlates = next(PlatesVisible) ~= nil
-		ResetPlateFlags(Plate)
-		if KP.inCombat then
-			ExecuteHitboxSecureScript()
-		end
-	end
-
-	--- Subroutine for table.sort to depth-sort plate virtuals.
-	local function SortFunc(PlateA, PlateB)
-		return Depths[PlateA] > Depths[PlateB]
+		ResetKhalPlate(Plate)
 	end
 
 	--- Update all visible nameplates
@@ -144,7 +116,7 @@ do
 		end
 		------- FrameLevels update based on sorting so regions don't overlap -------
 		if #SortOrder > 0 then
-			sort(SortOrder, SortFunc)
+			sort(SortOrder, function(a, b) return Depths[a] > Depths[b] end)
 			for Index, Plate in ipairs(SortOrder) do
 				Virtual = PlatesVisible[Plate]
 				SetFrameLevel(Virtual, Index * PlateLevels)
@@ -193,7 +165,7 @@ do
 
 	-- Creates a semi-transparent hitbox texture for debugging
 	local function SetupHitboxTexture(Plate)
-		Plate.hitBox = Plate:CreateTexture(nil, "BACKGROUND")
+		Plate.hitBox = Plate:CreateTexture(nil, "OVERLAY")
 		Plate.hitBox:SetTexture(0,0,0,0.5)
 		Plate.hitBox:SetAllPoints(Plate)
 	end
@@ -378,13 +350,7 @@ function KP:Initialize()
 
 	KP:BuildBlacklistUI()
 
-	if self.dbp.healthBar_border == "KhalPlates" then
-		self.ResizeHitBox:SetAttribute("width", NP_WIDTH * self.dbp.globalScale * 0.9)
-		self.ResizeHitBox:SetAttribute("height", NP_HEIGHT * self.dbp.globalScale * 0.7)
-	else
-		self.ResizeHitBox:SetAttribute("width", NP_WIDTH * self.dbp.globalScale)
-		self.ResizeHitBox:SetAttribute("height", NP_HEIGHT * self.dbp.globalScale)
-	end
+	HitboxAttributeUpdater()
 
 	if self.dbp.stackingEnabled then
 		SetCVar("nameplateAllowOverlap", 1)
@@ -427,13 +393,7 @@ function EventHandler:PLAYER_REGEN_ENABLED()
 	KP.inCombat = false
 	if KP.delayedHitboxUpdate then
 		KP.delayedHitboxUpdate = false
-		if KP.dbp.healthBar_border == "KhalPlates" then
-			KP.ResizeHitBox:SetAttribute("width", NP_WIDTH * KP.dbp.globalScale * 0.9)
-			KP.ResizeHitBox:SetAttribute("height", NP_HEIGHT * KP.dbp.globalScale * 0.7)
-		else
-			KP.ResizeHitBox:SetAttribute("width", NP_WIDTH * KP.dbp.globalScale)
-			KP.ResizeHitBox:SetAttribute("height", NP_HEIGHT * KP.dbp.globalScale)
-		end
+		HitboxAttributeUpdater()
 	end
 end
 

@@ -153,6 +153,7 @@ KP.dbp.specialPlate_BGHiconOffsetY = 0
 -- Totem Plate
 KP.dbp.totemSize = 24 -- Size of the totem (or NPC) icon replacing the nameplate
 KP.dbp.totemOffset = 0 -- Vertical offset for totem icon
+KP.dbp.showTotemBorder = true -- Colors the totem border green (friendly) or red (enemy)
 KP.dbp.TotemsCheck = { -- 1 = Icon, 0 = Hiden, false = nameplate
 	["Cleansing Totem"] = 1,
 	["Earth Elemental Totem"] = 1,
@@ -2047,13 +2048,14 @@ KP.MainOptionTable = {
 						KP.dbp[info[#info]] = val
 						KP:UpdateAllIcons()
 						KP:UpdateAllShownPlates()
+						KP:UpdateHitboxAttributes()
 					end,
 				},
 				totemOffset = {
 					order = 6,
 					type = "range",
 					name = "Offset Y",
-					desc = "Adjusts the vertical position of all Totem and Blacklisted icons.",
+					desc = "Adjusts the vertical position of all Totem and Blacklisted icons (does not affect plate hitbox).",
 					min = -50,
 					max = 50,
 					step = 0.1,
@@ -2063,9 +2065,19 @@ KP.MainOptionTable = {
 						KP:UpdateAllShownPlates()
 					end,
 				},
-				lineBreak4 = {order = 7, type = "description", name = ""},
-				lineBreak5 = {order = 8, type = "description", name = ""},
-				lineBreak6 = {order = 9, type = "description", name = ""},	
+				showTotemBorder = {
+					order = 7,
+					type = "toggle",
+					name = "Show Reaction Border",
+					desc = "Displays a colored border based on reaction.",
+					set = function(info, val)
+						KP.dbp[info[#info]] = val
+						KP:UpdateAllShownPlates()
+					end,
+				},
+				lineBreak4 = {order = 8, type = "description", name = ""},
+				lineBreak5 = {order = 9, type = "description", name = ""},
+				lineBreak6 = {order = 10, type = "description", name = ""},	
 			}
 		},
 		BlackList = {
