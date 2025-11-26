@@ -11,7 +11,7 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 - Displays arenaID and partyID numbers as optional text in arenas.
 - Integrated TotemPlates system with in-game configuration.
 - Implemented a Blacklist to hide specific nameplates or replace them with icons.
-- Optional "Barless Plates" that replace friendly player nameplates with only the name and indicators.
+- Optional "Barless Plates" that replace friendly nameplates with only the name and indicators.
 - Added click-through behavior for totems, blacklist and, optionally, friendly nameplates.
 - Integrated optional system that simulates Retail's nameplate stacking.
 
@@ -38,11 +38,11 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 </p>
 
 ## Installation  
-1. [Download](https://github.com/KhalGH/KhalPlates-WotLK/releases/download/v1.7.2/KhalPlates-v1.7.2.zip) the addon
+1. [Download](https://github.com/KhalGH/KhalPlates-WotLK/releases/download/v1.7.3/KhalPlates-v1.7.3.zip) the addon
 2. Extract the **!!KhalPlates** folder into `World of Warcraft/Interface/AddOns/`.  
 3. Restart the game and enable the addon.  
 
 ## Information  
-- **Addon Version:** 1.7.2  
+- **Addon Version:** 1.7.3  
 - **Game Version:** 3.3.5a (WotLK)  
 - **Author:** Khal  
