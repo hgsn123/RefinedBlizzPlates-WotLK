@@ -747,12 +747,6 @@ local function SetupRefinedPlate(Virtual)
 	SetupClassIcon(Virtual)
 	SetupCastBorder(Virtual)
 	SetupTargetHandler(Plate)
-	--[[ if ClassByPlateColor(Virtual.healthBar) then
-		Virtual.healthBar.barTex:SetTexture(RBP.LSM:Fetch("statusbar", RBP.dbp.healthBar_playerTex))
-	else
-		Virtual.healthBar.barTex:SetTexture(RBP.LSM:Fetch("statusbar", RBP.dbp.healthBar_npcTex))
-	end
-	Virtual.healthBar.nameText:SetText(Virtual.nameText:GetText()) ]]
 end
 
 local firstChecked
