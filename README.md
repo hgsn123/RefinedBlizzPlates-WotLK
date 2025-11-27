@@ -38,11 +38,11 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 </p>
 
 ## Installation  
-1. [Download](https://github.com/KhalGH/KhalPlates-WotLK/releases/download/v1.7.3/KhalPlates-v1.7.3.zip) the addon
+1. [Download](https://github.com/KhalGH/KhalPlates-WotLK/releases/download/v1.7.4/KhalPlates-v1.7.4.zip) the addon
 2. Extract the **!!KhalPlates** folder into `World of Warcraft/Interface/AddOns/`.  
 3. Restart the game and enable the addon.  
 
 ## Information  
-- **Addon Version:** 1.7.3  
+- **Addon Version:** 1.7.4  
 - **Game Version:** 3.3.5a (WotLK)  
 - **Author:** Khal  
