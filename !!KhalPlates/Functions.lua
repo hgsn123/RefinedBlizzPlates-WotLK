@@ -1472,7 +1472,7 @@ function KP:UpdateWorldFrameHeight(init)
 end
 
 function KP:UpdateAllShownPlates(updateRaidIcon, updateReaction)
-	for Plate in pairs(PlatesVisible) do
+	for Plate, Virtual in pairs(PlatesVisible) do
 		if updateRaidIcon then
 			Plate.hasRaidIcon = Virtual.raidTargetIcon:IsShown() and true
 		end
