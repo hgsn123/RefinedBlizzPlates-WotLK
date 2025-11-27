@@ -24,19 +24,19 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 
 ## Screenshots
 <p align="center">
-  <img src="https://raw.githubusercontent.com/KhalGH/KhalPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG2.jpg" 
+  <img src="https://raw.githubusercontent.com/KhalGH/RefinedBlizzPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG2.jpg" 
        alt="KhalPlatesIMG2" width="90%">
 </p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/KhalGH/KhalPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG3.jpg" 
+  <img src="https://raw.githubusercontent.com/KhalGH/RefinedBlizzPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG3.jpg" 
        alt="KhalPlatesIMG3" width="90%">
 </p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/KhalGH/KhalPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG5.jpg" 
+  <img src="https://raw.githubusercontent.com/KhalGH/RefinedBlizzPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG5.jpg" 
        alt="KhalPlatesIMG5" width="90%">
 </p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/KhalGH/KhalPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG6.jpg" 
+  <img src="https://raw.githubusercontent.com/KhalGH/RefinedBlizzPlates-WotLK/refs/heads/assets/assets/KhalPlatesIMG6.jpg" 
        alt="KhalPlatesIMG6" width="90%">
 </p>
 
