@@ -1,5 +1,5 @@
-# KhalPlates-WotLK
-**KhalPlates** is a lightweight nameplates addon for WoW 3.3.5a.  
+# RefinedBlizzPlates-WotLK
+**RefinedBlizzPlates** is a lightweight nameplates addon for WoW 3.3.5a.  
 It preserves a Blizzlike appearance while adding functional and visual improvements.
 
 ## Features  
@@ -16,8 +16,11 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 - Integrated optional system that simulates Retail's nameplate stacking.
 
 ## Recommendations
-- KhalPlates may conflict with Gladdy’s Totem Plates module. Disable it to ensure proper functionality.
+- RefinedBlizzPlates may conflict with Gladdy’s Totem Plates module. Disable it to ensure proper functionality.
 - Retail-like stacking is replicated from Cheeta’s WeakAura. Disable it to avoid conflicts and duplication.
+- Users of the old KhalPlates should rename their SavedVariables from:  
+  `World of Warcraft\WTF\Account\ACCOUNT\SavedVariables\!!KhalPlates.lua` to  
+  `World of Warcraft\WTF\Account\ACCOUNT\SavedVariables\!!RefinedBlizzPlates.lua` 
 
 ## Screenshots
 <p align="center">
@@ -38,11 +41,11 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 </p>
 
 ## Installation  
-1. [Download](https://github.com/KhalGH/KhalPlates-WotLK/releases/download/v1.7.4/KhalPlates-v1.7.4.zip) the addon
-2. Extract the **!!KhalPlates** folder into `World of Warcraft/Interface/AddOns/`.  
+1. [Download](https://github.com/KhalGH/RefinedBlizzPlates-WotLK/releases/download/v1.8.0/RefinedBlizzPlates-v1.8.0.zip) the addon
+2. Extract the **!!RefinedBlizzPlates** folder into `World of Warcraft/Interface/AddOns/`.  
 3. Restart the game and enable the addon.  
 
 ## Information  
-- **Addon Version:** 1.7.4  
+- **Addon Version:** 1.8.0  
 - **Game Version:** 3.3.5a (WotLK)  
 - **Author:** Khal  
