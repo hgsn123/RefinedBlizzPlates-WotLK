@@ -1477,7 +1477,7 @@ function KP:UpdateAllShownPlates(updateRaidIcon, updateReaction)
 			Plate.hasRaidIcon = Virtual.raidTargetIcon:IsShown() and true
 		end
 		if updateReaction then
-			Plate.isFriendly = ReactionByPlateColor(healthBar) == "FRIENDLY"
+			Plate.isFriendly = ReactionByPlateColor(Virtual.healthBar) == "FRIENDLY"
 		end
 		ResetKhalPlate(Plate)
 		UpdateKhalPlate(Plate)
