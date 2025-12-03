@@ -370,10 +370,6 @@ function RBP:Initialize()
 	end
 
 	SetUIVisibility(true)
-	if RBP.dbp.LDWfix then
-		EventHandler:RegisterEvent("ZONE_CHANGED_INDOORS")
-		EventHandler:RegisterEvent("UNIT_AURA")
-	end
 
 	local config = LibStub("AceConfig-3.0")
 	local dialog = LibStub("AceConfigDialog-3.0")
@@ -436,7 +432,7 @@ function EventHandler:PLAYER_ENTERING_WORLD()
 	end
 	RBP.inICC = false
 	RBP.inLDWZone = false
-	if instanceType == "raid" and RBP.dbp.LDWfix then
+	if instanceType == "raid" and then
 		SetMapToCurrentZone()
 		if GetCurrentMapAreaID() == 605 then
 			RBP.inICC = true
@@ -447,7 +443,9 @@ function EventHandler:PLAYER_ENTERING_WORLD()
 	end
     if RBP.DominateMind then
         RBP.DominateMind = nil
-		SetUIVisibility(true)
+		if RBP.dbp.LDWfix then
+			SetUIVisibility(true)
+		end
     end
 end
 
@@ -489,7 +487,9 @@ function EventHandler:ZONE_CHANGED_INDOORS()
 	end
     if RBP.DominateMind then
         RBP.DominateMind = nil
-        SetUIVisibility(true)
+		if RBP.dbp.LDWfix then
+			SetUIVisibility(true)
+		end
     end
 end
 
@@ -529,6 +529,8 @@ EventHandler:RegisterEvent("UNIT_FACTION")
 EventHandler:RegisterEvent("PLAYER_PVP_RANK_CHANGED")
 EventHandler:RegisterEvent("PLAYER_LEVEL_UP")
 EventHandler:RegisterEvent("ARENA_OPPONENT_UPDATE")
+EventHandler:RegisterEvent("ZONE_CHANGED_INDOORS")
+EventHandler:RegisterEvent("UNIT_AURA")
 EventHandler:RegisterEvent("RAID_TARGET_UPDATE")
 if C_NamePlate then
 	EventHandler:RegisterEvent("NAME_PLATE_UNIT_ADDED")

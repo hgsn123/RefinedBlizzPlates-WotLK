@@ -899,7 +899,9 @@ delayedSUIV:SetScript("OnUpdate", function(self, elapsed)
     self.timeLeft = self.timeLeft - elapsed
     if self.timeLeft <= 0 then
         self:Hide()
-		SetUIVisibility(true)
+		if RBP.dbp.LDWfix then
+			SetUIVisibility(true)
+		end
         RBP:UpdateAllShownPlates(false, true)
     end
 end)
@@ -916,7 +918,9 @@ local function CheckDominateMind()
         if spellID == 71289 then
             if not RBP.DominateMind then
                 RBP.DominateMind = true
-                SetUIVisibility(false)
+				if RBP.dbp.LDWfix then
+                	SetUIVisibility(false)
+				end
             end
             return
         end

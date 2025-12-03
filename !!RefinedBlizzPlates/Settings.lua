@@ -474,8 +474,8 @@ RBP.MainOptionTable = {
 							RBP.inLDWZone = false
 							if RBP.DominateMind then
 								RBP.DominateMind = nil
-								SetUIVisibility(true)
-							end							
+							end
+							SetUIVisibility(true)					
 						end
 					end,
 				},
