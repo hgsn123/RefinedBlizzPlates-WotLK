@@ -79,6 +79,12 @@ RBP.dbp.healthText_anchor = "RIGHT"
 RBP.dbp.healthText_offsetX = 0
 RBP.dbp.healthText_offsetY = 0
 RBP.dbp.healthText_color = {1, 1, 1} -- white
+-- Threat Overlay
+RBP.dbp.enableAggroColoring = false
+RBP.dbp.aggroColor = {1, 0, 0}
+RBP.dbp.gainingAggroColor = {0.9, 0.2, 0.8}
+RBP.dbp.losingAggroColor = {0.7, 0.2, 0.4}
+RBP.dbp.noAggroColor = {0.6, 0.6, 0.6}
 -- CastBar
 RBP.dbp.castBar_Tex = "KhalBar"
 -- Cast Text
@@ -1176,6 +1182,87 @@ RBP.MainOptionTable = {
 				},
 				lineBreak10 = {order = 26, type = "description", name = ""},
 				lineBreak11 = {order = 27, type = "description", name = ""},
+				aggroOverlay_header = {
+					order = 28,
+					type = "header",
+					name = "Aggro Coloring",
+				},
+				lineBreak12 = {order = 29, type = "description", name = ""},
+				enableAggroColoring = {
+					order = 30,
+					type = "toggle",
+					name = "Enable",
+					desc = "In PvE instances, changes NPC health bar color based on aggro status.",
+					set = function(info, val)
+						RBP.dbp[info[#info]] = val
+						if val then SetCVar("threatWarning", 1) end
+						RBP:UpdateAllShownPlates()
+					end,
+				},
+				lineBreak13 = {order = 31, type = "description", name = ""},
+				lineBreak14 = {order = 32, type = "description", name = ""},
+				aggroColor = {
+					order = 33,
+					type = "color",
+					name = "Aggro",
+					get = function(info)
+						local c = RBP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						RBP.dbp[info[#info]] = {r, g, b}
+					end,
+					disabled = function()
+						return not RBP.dbp.enableAggroColoring
+					end,
+				},
+				gainingAggroColor = {
+					order = 34,
+					type = "color",
+					name = "Gaining Aggro",
+					get = function(info)
+						local c = RBP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						RBP.dbp[info[#info]] = {r, g, b}
+					end,
+					disabled = function()
+						return not RBP.dbp.enableAggroColoring
+					end,
+				},
+				losingAggroColor = {
+					order = 35,
+					type = "color",
+					name = "Losing Aggro",
+					get = function(info)
+						local c = RBP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						RBP.dbp[info[#info]] = {r, g, b}
+					end,
+					disabled = function()
+						return not RBP.dbp.enableAggroColoring
+					end,
+				},
+				noAggroColor = {
+					order = 36,
+					type = "color",
+					name = "No Aggro",
+					get = function(info)
+						local c = RBP.dbp[info[#info]]
+						return c[1], c[2], c[3]
+					end,
+					set = function(info, r, g, b)
+						RBP.dbp[info[#info]] = {r, g, b}
+					end,
+					disabled = function()
+						return not RBP.dbp.enableAggroColoring
+					end,
+				},
+				lineBreak15 = {order = 37, type = "description", name = ""},
+				lineBreak16 = {order = 38, type = "description", name = ""},
 			},
 		},
 		CastBar = {

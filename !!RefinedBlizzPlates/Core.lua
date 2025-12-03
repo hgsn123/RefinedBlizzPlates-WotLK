@@ -14,7 +14,6 @@ local NP_WIDTH = RBP.NP_WIDTH
 local NP_HEIGHT = RBP.NP_HEIGHT
 local VirtualPlates = RBP.VirtualPlates
 local PlatesVisible = RBP.PlatesVisible
-local ReactionByPlateColor = RBP.ReactionByPlateColor
 local UpdateTarget = RBP.UpdateTarget
 local SetupRefinedPlate = RBP.SetupRefinedPlate
 local ForceLevelHide = RBP.ForceLevelHide
@@ -33,6 +32,7 @@ local UpdateRefinedPlate = RBP.UpdateRefinedPlate
 local ResetRefinedPlate = RBP.ResetRefinedPlate
 local DelayedUpdateAllShownPlates = RBP.DelayedUpdateAllShownPlates
 local UpdateStacking = RBP.UpdateStacking
+local UpdateAggroOverlay = RBP.UpdateAggroOverlay
 
 -- Local definitions
 local EventHandler = CreateFrame("Frame", nil, WorldFrame) -- Main addon frame (event handler + access to native frame methods)
@@ -97,7 +97,7 @@ do
 	end
 
 	--- Update all visible nameplates
-	local mouseoverName, Depth, healthBarHighlight, nameText, Virtual, BGHframe
+	local mouseoverName, Depth, Virtual
 	local function PlatesUpdate()
 		if not ExistsVisiblePlates then return end
 		mouseoverName = UnitName("mouseover")
@@ -105,25 +105,27 @@ do
 			Depth = Virtual:GetEffectiveDepth()
 			if Depth > 0 then
 				SortOrder[#SortOrder + 1] = Plate
-				if Virtual.isTarget then
+				if Plate.isTarget then
 					Depths[Plate] = -1
 				else
 					Depths[Plate] = Depth
 				end
 				if Virtual.isShown then
 					----------------------- Improved mouseover highlight -----------------------
-					healthBarHighlight = Virtual.healthBarHighlight
-					nameText = Virtual.healthBar.nameText
-					if healthBarHighlight:IsShown() then
+					if Virtual.healthBarHighlight:IsShown() then
 						if Plate.nameString ~= mouseoverName then
-							healthBarHighlight:Hide()
+							Virtual.healthBarHighlight:Hide()
 						elseif not Virtual.nameTextIsYellow then
-							nameText:SetTextColor(1, 1, 0)
+							Virtual.nameText:SetTextColor(1, 1, 0)
 							Virtual.nameTextIsYellow  = true
 						end
 					elseif Virtual.nameTextIsYellow then
-						nameText:SetTextColor(Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB)
+						Virtual.nameText:SetTextColor(Virtual.nameColorR, Virtual.nameColorG, Virtual.nameColorB)
 						Virtual.nameTextIsYellow = false
+					end
+					---------------- Aggro Coloring ----------------
+					if Virtual.aggroColoring then
+						UpdateAggroOverlay(Virtual)
 					end
 				end
 			end
@@ -132,7 +134,7 @@ do
 		if #SortOrder > 0 then
 			sort(SortOrder, function(a, b) return Depths[a] > Depths[b] end)
 			for Index, Plate in ipairs(SortOrder) do
-				Virtual = PlatesVisible[Plate]
+				Virtual = Plate.VirtualPlate
 				SetFrameLevel(Virtual, Index * PlateLevels)
 				SetFrameLevel(Virtual.healthBar, Index * PlateLevels)
 				if Plate.totemPlateIsShown then
@@ -141,9 +143,8 @@ do
 				if Plate.barlessPlateIsShown then
 					SetFrameLevel(Plate.barlessPlate, Index * PlateLevels + 1)
 				end
-				BGHframe = Virtual.BGHframe
-				if BGHframe then
-					SetFrameLevel(BGHframe, Index * PlateLevels + 1) 
+				if Virtual.BGHframe then
+					SetFrameLevel(Virtual.BGHframe, Index * PlateLevels + 1) 
 				end
 			end
 			wipe(SortOrder)
@@ -342,11 +343,11 @@ do
 end
 
 function RBP:OnProfileChanged(...)
-	self.dbp = self.db.profile
-	self:MoveAllShownPlates(self.dbp.globalOffsetX - self.globalOffsetX, self.dbp.globalOffsetY - self.globalOffsetY)
+	RBP.dbp = self.db.profile
+	self:MoveAllShownPlates(RBP.dbp.globalOffsetX - self.globalOffsetX, RBP.dbp.globalOffsetY - self.globalOffsetY)
 	self:UpdateProfile()
-	self.globalOffsetX = self.dbp.globalOffsetX
-	self.globalOffsetY = self.dbp.globalOffsetY
+	self.globalOffsetX = RBP.dbp.globalOffsetX
+	self.globalOffsetY = RBP.dbp.globalOffsetY
 end
 
 function RBP:Initialize()
@@ -356,20 +357,20 @@ function RBP:Initialize()
 	self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
 	self.db.RegisterCallback(self, "OnProfileDeleted", "OnProfileChanged")
 
-	self.dbp = self.db.profile -- Replace default profile with AceDB profile
-	self.globalOffsetX = self.dbp.globalOffsetX
-	self.globalOffsetY = self.dbp.globalOffsetY
+	RBP.dbp = self.db.profile -- Replace default profile with AceDB profile
+	self.globalOffsetX = RBP.dbp.globalOffsetX
+	self.globalOffsetY = RBP.dbp.globalOffsetY
 
 	RBP:BuildBlacklistUI()
 
 	HitboxAttributeUpdater()
 
-	if self.dbp.stackingEnabled then
+	if RBP.dbp.stackingEnabled then
 		SetCVar("nameplateAllowOverlap", 1)
 	end
 
 	SetUIVisibility(true)
-	if self.dbp.LDWfix then
+	if RBP.dbp.LDWfix then
 		EventHandler:RegisterEvent("ZONE_CHANGED_INDOORS")
 		EventHandler:RegisterEvent("UNIT_AURA")
 	end
