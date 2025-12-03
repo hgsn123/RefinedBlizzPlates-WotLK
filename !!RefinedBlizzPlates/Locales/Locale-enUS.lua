@@ -135,3 +135,184 @@ RBP.Blacklist = {
 }
 
 RBP.LDWZoneText = "Oratory of the Damned"
+
+RBP.L = {}
+local L = RBP.L
+
+-- General --
+L["General"] = true
+L["General Settings"] = true
+L["Nameplate Style Preset"] = true
+L["This will override some of your current settings to match the preset."] = true
+L["Global Scale"] = true
+L["Scales both the visual size and the clickable hitbox of nameplates."] = true
+L["Global Offset X"] = true
+L["Global Offset Y"] = true
+L["Affects only the nameplate's visual regions. The real hitbox can't be moved using this feature."] = true
+L["Target Scale Factor"] = true
+L["Adjusts the target nameplate’s scale, applied multiplicatively with the global scale."] = true
+L["Friendly Scale Factor"] = true
+L["Adjusts friendly nameplate scale, applied multiplicatively with the global scale."] = true
+L["Click-through Friendly Nameplates"] = true
+L["Disable friendly nameplates hitboxes inside PvE and PvP instances."] = true
+L["Clamp Target"] = true
+L["Prevents targeted enemy nameplate from going above the top of the screen."] = true
+L["Clamp Bosses"] = true
+L["Prevents boss nameplates inside instances from going above the top of the screen."] = true
+L["Clamping Top Inset"] = true
+L["Adjusts the distance below the top of the screen where clamped nameplates will stop."] = true
+L["Level Filter"] = true
+L["Minimum unit level required for the nameplate to be shown."] = true
+L["Hide on LDW MC"] = true
+L["Hide nameplates when mind-controlled by Lady Deathwhisper."] = true
+L["Retail-like Stacking"] = true
+L["Simulates Retail's nameplate stacking for enemies. This feature has a high CPU cost, use it with discretion."] = true
+L["Collider Width"] = true
+L["Sets the width of the virtual collider centered on each nameplate used to detect overlaps."] = true
+L["Collider Height"] = true
+L["Sets the height of the virtual collider centered on each nameplate used to detect overlaps."] = true
+L["Vertical Offset"] = true
+L["Vertically offsets the entire nameplate, including its hitbox."] = true
+L["Freeze Mouseover"] = true
+L["Stops the nameplate you're mousing over from moving for better selection."] = true
+L["Disable in Open World"] = true
+L["Only process stacking inside PvE and PvP instances. This will reduce CPU usage in the open world."] = true
+
+-- Text --
+L["Text"] = true
+L["Name Text"] = true
+L["Text Font"] = true
+L["Font Size"] = true
+L["None"] = true
+L["Outline"] = true
+L["Thick Outline"] = true
+L["Monochrome"] = true
+L["Monochrome Outline"] = true
+L["Monochrome Thick Outline"] = true
+L["Anchor"] = true
+L["Left"] = true
+L["Center"] = true
+L["Right"] = true
+L["Top"] = true
+L["Bottom"] = true
+L["Offset X"] = true
+L["Offset Y"] = true
+L["Base Text Color"] = true
+L["Class Colors on Friends"] = true
+L["Use class colors for friendly player names (only works for party or raid members)."] = true
+L["Class Colors on Enemies"] = true
+L["Use class colors for enemy player names. 'Class Colors in Nameplates' must be enabled."] = true
+L["Width"] = true
+L["Hide Name Text"] = true
+L["Level Text"] = true
+L["Hide Level Text"] = true
+L["Arena/Party ID Text"] = true
+L["Shared Settings"] = true
+L["Show ArenaID"] = true
+L["ArenaID Color"] = true
+L["Shows Arena ID numbers on nameplates in arena"] = true
+L["Hide Enemy Name"] = true
+L["Hide name text on arena enemies"] = true
+L["Hide Enemy Level"] = true
+L["Hide level text on arena enemies"] = true
+L["Show PartyID"] = true
+L["PartyID Color"] = true
+L["Shows Party ID numbers on nameplates in arena"] = true
+L["Hide Friend Name"] = true
+L["Hide name text on party"] = true
+L["Hide Friend Level"] = true
+L["Hide level text on party"] = true
+
+-- Health Bar --
+L["Health Bar"] = true
+L["Appearance"] = true
+L["Player Bar Texture"] = true
+L["NPC Bar Texture"] = true
+L["Border Tint"] = true
+L["This is a tint overlay, not a regular color. 'White' keeps the original look."] = true
+L["Glows"] = true
+L["Target Glow Tint"] = true
+L["Mouseover Glow Tint"] = true
+L["Health Text"] = true
+L["Text Color"] = true
+L["Hide Health Text"] = true
+L["Aggro Coloring"] = true
+L["Enable"] = true
+L["In PvE instances, changes NPC health bar color based on aggro status."] = true
+L["Aggro"] = true
+L["Gaining Aggro"] = true
+L["Losing Aggro"] = true
+L["No Aggro"] = true
+
+-- Cast Bar --
+L["Cast Bar"] = true
+L["Bar Texture"] = true
+L["Cast Text"] = true
+L["Hide Cast Text"] = true
+L["Cast Timer Text"] = true
+L["Hide Cast Timer Text"] = true
+
+-- Icons --
+L["Icons"] = true
+L["Elite Icon"] = true
+L["Tint"] = true
+L["Boss Icon"] = true
+L["Icon Size"] = true
+L["Raid Target Icon"] = true
+L["Class Icon"] = true
+L["Show on Friends"] = true
+L["Show on Enemies"] = true
+L["Class icons will only be shown inside PvE or PvP instances."] = true
+
+-- Barless Plate --
+L["Barless Plate"] = true
+L["Barless Plate Enabling"] = true
+L["Enable in PvE"] = true
+L["Enable in BGs"] = true
+L["Enable in Arenas"] = true
+L["Replace friendly nameplates with a barless layout: name text and anchored indicators."] = true
+L["Player Name Text"] = true
+L["Adjusts the visual vertical position (does not affect the hitbox)."] = true
+L["Gray Out by Health %"] = true
+L["Progressively grays the name from right to left based on remaining health."] = true
+L["Use class color"] = true
+L["NPC Name Text"] = true
+L["Show in Players"] = true
+L["Show in NPCs"] = true
+L["Show Raid Target Icon"] = true
+L["Show Class Icon"] = true
+L["BG Healer Icon"] = true
+L["This feature is available only when BattleGroundHealers is loaded."] = true
+L["These settings will replace some of BattleGroundHealers’ icon configuration for Barless Plates."] = true
+
+-- Totems --
+L["Totems"] = true
+L["Totem Icon"] = true
+L["Adjusts the vertical position of all Totem and Blacklisted icons (does not affect plate hitbox)."] = true
+L["Show Reaction Border"] = true
+L["Displays a colored border based on reaction."] = true
+L["Enable TotemPlate"] = true
+L["Replaces the nameplate with a totem icon."] = true
+L["Hide Totem"] = true
+L["Completely hides the nameplate and the totemplate for this totem."] = true
+
+-- Blacklist --
+L["Blacklist"] = true
+L["Unit name"] = true
+L["Add the exact name of a unit whose nameplate you want to hide or replace with an icon. Blacklisted nameplates will always be click-through."] = true
+L["Set target name"] = true
+L["Add to blacklist"] = true
+L["Reset"] = true
+L["Restore the default blacklist"] = true
+L["Are you sure you want to restore the default blacklist?"] = true
+L["Icon Path"] = true
+L["Enter the path to an icon texture to replace the nameplate, or leave it empty to hide it completely."] = true
+L["Remove"] = true
+L["Remove this unit from the blacklist"] = true
+L["Are you sure you want to remove this unit from the blacklist?"] = true
+
+for k, v in pairs(L) do
+    if v == true then
+        L[k] = k
+    end
+end

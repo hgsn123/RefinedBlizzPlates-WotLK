@@ -1701,6 +1701,7 @@ function RBP:UpdateAllShownPlates(updateRaidIcon, updateReaction)
 			Plate.hasRaidIcon = Virtual.raidTargetIcon:IsShown() and true
 		end
 		if updateReaction then
+			Virtual.healthBarColor = {Virtual.healthBar:GetStatusBarColor()}
 			local reaction = ReactionByPlateColor(unpack(Virtual.healthBarColor))
 			Plate.isFriendly = reaction == "FRIENDLY"
 			Plate.isHostile = reaction == "HOSTILE"
