@@ -688,6 +688,7 @@ end
 
 local function BarlessPlateHandler(Plate)
 	local Virtual = Plate.VirtualPlate
+	Virtual.threatGlow:SetTexture(nil)
 	local barlessPlate = Plate.barlessPlate
 	if not Plate.isTarget then
 		local barlessNameText = Plate.barlessPlate_nameText
@@ -799,7 +800,6 @@ local function SetupTargetHandler(Plate)
 		if Virtual.isShown then
 			if Plate.isBarlessPlate then	
 				BarlessPlateHandler(Plate)
-				Virtual.threatGlow:SetTexture(nil)
 			end
 			if not Plate.isFriendly and not RBP.dbp.stackingEnabled then
 				if (Plate.isTarget and RBP.dbp.clampTarget) or (Plate.hasBossIcon and RBP.dbp.clampBoss and RBP.inPvEInstance) then
