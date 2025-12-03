@@ -432,7 +432,7 @@ function EventHandler:PLAYER_ENTERING_WORLD()
 	end
 	RBP.inICC = false
 	RBP.inLDWZone = false
-	if instanceType == "raid" and then
+	if instanceType == "raid" then
 		SetMapToCurrentZone()
 		if GetCurrentMapAreaID() == 605 then
 			RBP.inICC = true
