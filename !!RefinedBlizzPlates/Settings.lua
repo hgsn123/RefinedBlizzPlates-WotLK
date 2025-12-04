@@ -623,12 +623,12 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Outline"],
 					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+						[""] = L["None"],
+						["OUTLINE"] = L["Outline"],
+						["THICKOUTLINE"] = L["Thick Outline"],
+						["MONOCHROME"] = L["Monochrome"],
+						["OUTLINE,MONOCHROME"] = L["Monochrome Outline"],
+						["THICKOUTLINE,MONOCHROME"] = L["Monochrome Thick Outline"],
 					},
 					disabled = function()
 						return RBP.dbp.nameText_hide
@@ -639,9 +639,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["LEFT"] = "Left",
-						["CENTER"] = "Center",
-						["RIGHT"] = "Right"
+						["LEFT"] = L["Left"],
+						["CENTER"] = L["Center"],
+						["RIGHT"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -761,12 +761,12 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Outline"],
 					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+						[""] = L["None"],
+						["OUTLINE"] = L["Outline"],
+						["THICKOUTLINE"] = L["Thick Outline"],
+						["MONOCHROME"] = L["Monochrome"],
+						["OUTLINE,MONOCHROME"] = L["Monochrome Outline"],
+						["THICKOUTLINE,MONOCHROME"] = L["Monochrome Thick Outline"],
 					},
 					disabled = function()
 						return RBP.dbp.levelText_hide
@@ -777,9 +777,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Center"] = "Center",
-						["Right"] = "Right"
+						["Left"] = L["Left"],
+						["Center"] = L["Center"],
+						["Right"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -860,12 +860,12 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Outline"],
 					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+						[""] = L["None"],
+						["OUTLINE"] = L["Outline"],
+						["THICKOUTLINE"] = L["Thick Outline"],
+						["MONOCHROME"] = L["Monochrome"],
+						["OUTLINE,MONOCHROME"] = L["Monochrome Outline"],
+						["THICKOUTLINE,MONOCHROME"] = L["Monochrome Thick Outline"],
 					},
 					disabled = function()
 						return not RBP.dbp.ArenaIDText_show and not RBP.dbp.PartyIDText_show
@@ -876,9 +876,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Center"] = "Center",
-						["Right"] = "Right"
+						["Left"] = L["Left"],
+						["Center"] = L["Center"],
+						["Right"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -1123,12 +1123,12 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Outline"],
 					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+						[""] = L["None"],
+						["OUTLINE"] = L["Outline"],
+						["THICKOUTLINE"] = L["Thick Outline"],
+						["MONOCHROME"] = L["Monochrome"],
+						["OUTLINE,MONOCHROME"] = L["Monochrome Outline"],
+						["THICKOUTLINE,MONOCHROME"] = L["Monochrome Thick Outline"],
 					},
 					disabled = function()
 						return RBP.dbp.healthText_hide
@@ -1139,9 +1139,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["LEFT"] = "Left",
-						["CENTER"] = "Center",
-						["RIGHT"] = "Right"
+						["LEFT"] = L["Left"],
+						["CENTER"] = L["Center"],
+						["RIGHT"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -1338,12 +1338,12 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Outline"],
 					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+						[""] = L["None"],
+						["OUTLINE"] = L["Outline"],
+						["THICKOUTLINE"] = L["Thick Outline"],
+						["MONOCHROME"] = L["Monochrome"],
+						["OUTLINE,MONOCHROME"] = L["Monochrome Outline"],
+						["THICKOUTLINE,MONOCHROME"] = L["Monochrome Thick Outline"],
 					},
 					disabled = function()
 						return RBP.dbp.castText_hide
@@ -1354,9 +1354,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["LEFT"] = "Left",
-						["CENTER"] = "Center",
-						["RIGHT"] = "Right"
+						["LEFT"] = L["Left"],
+						["CENTER"] = L["Center"],
+						["RIGHT"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -1456,12 +1456,12 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Outline"],
 					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+						[""] = L["None"],
+						["OUTLINE"] = L["Outline"],
+						["THICKOUTLINE"] = L["Thick Outline"],
+						["MONOCHROME"] = L["Monochrome"],
+						["OUTLINE,MONOCHROME"] = L["Monochrome Outline"],
+						["THICKOUTLINE,MONOCHROME"] = L["Monochrome Thick Outline"],
 					},
 					disabled = function()
 						return RBP.dbp.castTimerText_hide
@@ -1472,9 +1472,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["LEFT"] = "Left",
-						["CENTER"] = "Center",
-						["RIGHT"] = "Right"
+						["LEFT"] = L["Left"],
+						["CENTER"] = L["Center"],
+						["RIGHT"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -1555,8 +1555,8 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Right"] = "Right"
+						["Left"] = L["Left"],
+						["Right"] = L["Right"]
 					},
 				},
 				eliteIcon_Tint = {
@@ -1587,9 +1587,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Top"] = "Top",
-						["Right"] = "Right"
+						["Left"] = L["Left"],
+						["Top"] = L["Top"],
+						["Right"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -1636,9 +1636,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Top"] = "Top",
-						["Right"] = "Right"
+						["Left"] = L["Left"],
+						["Top"] = L["Top"],
+						["Right"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -1685,9 +1685,9 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Top"] = "Top",
-						["Right"] = "Right"
+						["Left"] = L["Left"],
+						["Top"] = L["Top"],
+						["Right"] = L["Right"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -1813,12 +1813,12 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Outline"],
 					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+						[""] = L["None"],
+						["OUTLINE"] = L["Outline"],
+						["THICKOUTLINE"] = L["Thick Outline"],
+						["MONOCHROME"] = L["Monochrome"],
+						["OUTLINE,MONOCHROME"] = L["Monochrome Outline"],
+						["THICKOUTLINE,MONOCHROME"] = L["Monochrome Thick Outline"],
 					},
 					disabled = function()
 						return not (RBP.dbp.barlessPlate_showInPvE or RBP.dbp.barlessPlate_showInBG or RBP.dbp.barlessPlate_showInArena)
@@ -1904,12 +1904,12 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Outline"],
 					values = {
-						[""] = "None",
-						["OUTLINE"] = "Outline",
-						["THICKOUTLINE"] = "Thick Outline",
-						["MONOCHROME"] = "Monochrome",
-						["OUTLINE,MONOCHROME"] = "Monochrome Outline",
-						["THICKOUTLINE,MONOCHROME"] = "Monochrome Thick Outline",
+						[""] = L["None"],
+						["OUTLINE"] = L["Outline"],
+						["THICKOUTLINE"] = L["Thick Outline"],
+						["MONOCHROME"] = L["Monochrome"],
+						["OUTLINE,MONOCHROME"] = L["Monochrome Outline"],
+						["THICKOUTLINE,MONOCHROME"] = L["Monochrome Thick Outline"],
 					},
 					disabled = function()
 						return not (RBP.dbp.barlessPlate_showInPvE or RBP.dbp.barlessPlate_showInBG or RBP.dbp.barlessPlate_showInArena)
@@ -1983,10 +1983,10 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Top"] = "Top",
-						["Right"] = "Right",
-						["Bottom"] = "Bottom",
+						["Left"] = L["Left"],
+						["Top"] = L["Top"],
+						["Right"] = L["Right"],
+						["Bottom"] = L["Bottom"],
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -2055,10 +2055,10 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Top"] = "Top",
-						["Right"] = "Right",
-						["Bottom"] = "Bottom"
+						["Left"] = L["Left"],
+						["Top"] = L["Top"],
+						["Right"] = L["Right"],
+						["Bottom"] = L["Bottom"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -2126,10 +2126,10 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Top"] = "Top",
-						["Right"] = "Right",
-						["Bottom"] = "Bottom"
+						["Left"] = L["Left"],
+						["Top"] = L["Top"],
+						["Right"] = L["Right"],
+						["Bottom"] = L["Bottom"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
@@ -2190,11 +2190,11 @@ RBP.MainOptionTable = {
 					fontSize = "medium",
 					name = function()
 						if not IsAddOnLoaded("BattleGroundHealers") then
-							return "|cff808080" .. "This feature is available only when BattleGroundHealers is loaded." .. "|r"
+							return "|cff808080" .. L["This feature is available only when BattleGroundHealers is loaded."] .. "|r"
 						elseif not RBP.dbp.barlessPlate_showInBG then
-							return "|cff808080" .. "These settings will replace some of BattleGroundHealers’ icon configuration for Barless Plates." .. "|r"
+							return "|cff808080" .. L["These settings will replace some of BattleGroundHealers’ icon configuration for Barless Plates."] .. "|r"
 						else
-							return "These settings will replace some of BattleGroundHealers’ icon configuration for Barless Plates."
+							return L["These settings will replace some of BattleGroundHealers’ icon configuration for Barless Plates."]
 						end
 					end,
 				},
@@ -2205,10 +2205,10 @@ RBP.MainOptionTable = {
 					type = "select", 
 					name = L["Anchor"],
 					values = {
-						["Left"] = "Left",
-						["Top"] = "Top",
-						["Right"] = "Right",
-						["Bottom"] = "Bottom"
+						["Left"] = L["Left"],
+						["Top"] = L["Top"],
+						["Right"] = L["Right"],
+						["Bottom"] = L["Bottom"]
 					},
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
