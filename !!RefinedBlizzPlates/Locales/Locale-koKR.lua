@@ -316,8 +316,3 @@ L["Enter the path to an icon texture to replace the nameplate, or leave it empty
 L["Remove"] = "제거"
 L["Remove this unit from the blacklist"] = "차단 목록에서 이 유닛 제거"
 L["Are you sure you want to remove this unit from the blacklist?"] = "차단 목록에서 이 유닛을 제거하시겠습니까?"
-
--- 기타 --
-L["LEFT"] = "좌측"
-L["CENTER"] = "중앙"
-L["RIGHT"] = "우측"

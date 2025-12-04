@@ -127,13 +127,10 @@ RBP.Blacklist = {
 	["霜翼幼龍"] = "Interface\\Icons\\INV_PET_FROSTWYRM",
 	-- NPC's plates hidden
 	["暗月算命師"] = "",
-	-- ↓↓部落大象商人↓↓ --
 	["崔克斯·黑擰"]  = "",
 	["莫巧狄休"] = "",
-	-- ↓↓聯盟大象商人↓↓ --
 	["格尼莫"] = "",
 	["阿古斯的哈克瑪"] = "",
-	---------------------	
 	["大法師瓦戈斯的影像"] = "",
 	["球中的小鬼"] = "",	
 	["靈魂圖騰"] = "",
@@ -319,8 +316,3 @@ L["Enter the path to an icon texture to replace the nameplate, or leave it empty
 L["Remove"] = "移除"
 L["Remove this unit from the blacklist"] = "從黑名單中移除此單位"
 L["Are you sure you want to remove this unit from the blacklist?"] = "確定要從黑名單中移除此單位嗎？"
-
--- 其他
-L["LEFT"] = "左"
-L["CENTER"] = "中"
-L["RIGHT"] = "右"
