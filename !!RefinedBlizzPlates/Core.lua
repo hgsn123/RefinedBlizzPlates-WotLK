@@ -248,10 +248,12 @@ do
 			NextUpdate = UpdateRate
 			PlatesUpdate()
 		end
-		NextSecUpdate = NextSecUpdate - elapsed
-		if NextSecUpdate <= 0 then
-			NextSecUpdate = SecUpdateRate
-			PlatesAggroUpdate()
+		if RBP.dbp.enableAggroColoring and RBP.inPvEInstance then
+			NextSecUpdate = NextSecUpdate - elapsed
+			if NextSecUpdate <= 0 then
+				NextSecUpdate = SecUpdateRate
+				PlatesAggroUpdate()
+			end
 		end
 	end
 end

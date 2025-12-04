@@ -838,15 +838,22 @@ end
 
 local function UpdateAggroOverlay(Virtual)
 	local aggroOverlay = Virtual.aggroOverlay
-	local aggroStatus = GetAggroStatus(Virtual.threatGlow)
-	if aggroStatus == 3 then
-		aggroOverlay:SetVertexColor(unpack(RBP.dbp.aggroColor))
-	elseif aggroStatus == 2 then
-		aggroOverlay:SetVertexColor(unpack(RBP.dbp.losingAggroColor))
-	elseif aggroStatus == 1 then
-		aggroOverlay:SetVertexColor(unpack(RBP.dbp.gainingAggroColor))
-	elseif aggroStatus == 0 then
-		aggroOverlay:SetVertexColor(unpack(RBP.dbp.noAggroColor))
+	if ReactionByPlateColor(Virtual.healthBar:GetStatusBarColor()) == "HOSTILE" then
+		local aggroStatus = GetAggroStatus(Virtual.threatGlow)
+		if aggroStatus == 3 then
+			aggroOverlay:SetVertexColor(unpack(RBP.dbp.aggroColor))
+		elseif aggroStatus == 2 then
+			aggroOverlay:SetVertexColor(unpack(RBP.dbp.losingAggroColor))
+		elseif aggroStatus == 1 then
+			aggroOverlay:SetVertexColor(unpack(RBP.dbp.gainingAggroColor))
+		elseif aggroStatus == 0 then
+			aggroOverlay:SetVertexColor(unpack(RBP.dbp.noAggroColor))
+		end
+		aggroOverlay:Show()
+		Virtual.healthBarTex:SetTexture(nil)
+	else
+		aggroOverlay:Hide()
+		Virtual.healthBarTex:SetTexture(RBP.LSM:Fetch("statusbar", RBP.dbp.healthBar_npcTex))
 	end
 end
 
@@ -1349,14 +1356,12 @@ local function UpdateRefinedPlate(Plate)
 				end
 				Virtual.healthBarTex:SetTexture(RBP.LSM:Fetch("statusbar", RBP.dbp.healthBar_playerTex))
 			else
-				if RBP.dbp.enableAggroColoring and Plate.isHostile and RBP.inPvEInstance then
+				if RBP.dbp.enableAggroColoring and RBP.inPvEInstance then
 					if not Virtual.aggroOverlay then
 						SetupAggroOverlay(Virtual)
 					end
-					Virtual.threatGlow:SetTexture(nil)
-					Virtual.healthBarTex:SetTexture(nil)
 					UpdateAggroOverlay(Virtual)
-					Virtual.aggroOverlay:Show()
+					Virtual.threatGlow:SetTexture(nil)
 					Virtual.aggroColoring = true
 				else
 					Virtual.healthBarTex:SetTexture(RBP.LSM:Fetch("statusbar", RBP.dbp.healthBar_npcTex))
