@@ -12,7 +12,7 @@ It preserves a Blizzlike appearance while adding functional and visual improveme
 - Integrated TotemPlates system with in-game configuration.
 - Implemented a Blacklist to hide specific nameplates or replace them with icons.
 - Optional "Barless Plates" that replace friendly nameplates with only the name and indicators.
-- Added click-through behavior for totems, blacklist and, optionally, friendly nameplates.
+- Added click-through behavior for blacklist and, optionally, friendly nameplates.
 - Integrated optional system that simulates Retail's nameplate stacking.
 
 ## Recommendations
