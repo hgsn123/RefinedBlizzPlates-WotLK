@@ -138,6 +138,8 @@ RBP.Blacklist = {
 }
 
 RBP.LDWZoneText = "诅咒祷堂"
+RBP.RefinedFontKey = LibStub("LibSharedMedia-3.0").DefaultMedia.font
+RBP.BlizzFontKey = LibStub("LibSharedMedia-3.0").DefaultMedia.font
 
 local L = RBP.L
 

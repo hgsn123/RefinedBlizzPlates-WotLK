@@ -3,7 +3,6 @@ local AddonFile, RBP = ... -- namespace
 
 local LSM = LibStub("LibSharedMedia-3.0")
 local ASSETS = "Interface\\AddOns\\" .. AddonFile .. "\\Assets\\"
-
 ------------------------------------------ Status Bar Textures ------------------------------------------
 LSM:Register("statusbar", "Blizzard Nameplates", "Interface\\TargetingFrame\\UI-TargetingFrame-BarFill")
 LSM:Register("statusbar", "AceBarFrames", ASSETS .. "StatusBars\\AceBarFrames")

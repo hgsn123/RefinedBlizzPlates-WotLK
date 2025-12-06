@@ -135,6 +135,8 @@ RBP.Blacklist = {
 }
 
 RBP.LDWZoneText = "Oratory of the Damned"
+RBP.RefinedFontKey = "Arial Narrow"
+RBP.BlizzFontKey = "Friz Quadrata TT"
 
 RBP.L = {}
 local L = RBP.L

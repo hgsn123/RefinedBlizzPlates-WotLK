@@ -138,6 +138,8 @@ RBP.Blacklist = {
 }
 
 RBP.LDWZoneText = "저주받은 자들의 기도실"
+RBP.RefinedFontKey = LibStub("LibSharedMedia-3.0").DefaultMedia.font
+RBP.BlizzFontKey = LibStub("LibSharedMedia-3.0").DefaultMedia.font
 
 local L = RBP.L
 
