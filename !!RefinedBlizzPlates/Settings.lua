@@ -88,6 +88,7 @@ RBP.dbp.healthText_offsetY = 0
 RBP.dbp.healthText_color = {1, 1, 1} -- white
 -- Threat Overlay
 RBP.dbp.enableAggroColoring = false
+RBP.dbp.disableAggroOpenworld = true
 RBP.dbp.aggroColor = {0.2, 0.8, 0.6}
 RBP.dbp.gainingAggroColor = {0.2, 0.5, 0.5}
 RBP.dbp.losingAggroColor = {0.7, 0.2, 0.4}
@@ -585,7 +586,7 @@ RBP.MainOptionTable = {
 					desc = L["Simulates Retail's nameplate stacking for enemies. This feature has a high CPU cost, use it with discretion."],
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
-						if val then SetCVar("nameplateAllowOverlap", 1) end
+						RBP:UpdateCVars()
 						RBP:UpdateAllShownPlates()
 					end,
 				},
@@ -1281,10 +1282,10 @@ RBP.MainOptionTable = {
 					order = 30,
 					type = "toggle",
 					name = L["Enable"],
-					desc = L["In PvE instances, changes NPC health bar color based on aggro status."],
+					desc = L["Changes NPC health bar color based on aggro status."],
 					set = function(info, val)
 						RBP.dbp[info[#info]] = val
-						if val then SetCVar("threatWarning", 1) end
+						RBP:UpdateCVars()
 						RBP:UpdateAllShownPlates()
 					end,
 				},
@@ -1350,8 +1351,21 @@ RBP.MainOptionTable = {
 						return not RBP.dbp.enableAggroColoring
 					end,
 				},
-				lineBreak15 = {order = 37, type = "description", name = ""},
-				lineBreak16 = {order = 38, type = "description", name = ""},
+				disableAggroOpenworld = {
+					order = 37,
+					type = "toggle",
+					name = L["Disable in Open World"],
+					set = function(info, val)
+						RBP.dbp[info[#info]] = val
+						RBP:UpdateCVars()
+						RBP:UpdateAllShownPlates()
+					end,
+					disabled = function()
+						return not RBP.dbp.enableAggroColoring
+					end,
+				},
+				lineBreak15 = {order = 38, type = "description", name = ""},
+				lineBreak16 = {order = 39, type = "description", name = ""},
 			},
 		},
 		CastBar = {

@@ -107,7 +107,6 @@ do
 		mouseoverName = UnitName("mouseover")
 		for Plate, Virtual in pairs(PlatesVisible) do
 			Depth = Virtual:GetEffectiveDepth()
-
 			if Depth > 0 then
 				SortOrder[#SortOrder + 1] = Plate
 				if Plate.isTarget then
@@ -255,7 +254,7 @@ do
 			NextUpdate = UpdateRate
 			PlatesUpdate()
 		end
-		if RBP.dbp.enableAggroColoring and RBP.inPvEInstance then
+		if RBP.dbp.enableAggroColoring and (RBP.inPvEInstance or not RBP.dbp.disableAggroOpenworld) then
 			NextSecUpdate = NextSecUpdate - elapsed
 			if NextSecUpdate <= 0 then
 				NextSecUpdate = SecUpdateRate
@@ -375,13 +374,7 @@ function RBP:Initialize()
 	self.globalOffsetY = RBP.dbp.globalOffsetY
 
 	RBP:BuildBlacklistUI()
-
 	ClickboxAttributeUpdater()
-
-	if RBP.dbp.stackingEnabled then
-		SetCVar("nameplateAllowOverlap", 1)
-	end
-
 	SetUIVisibility(true)
 
 	local config = LibStub("AceConfig-3.0")
@@ -407,7 +400,7 @@ end
 function EventHandler:PLAYER_LOGIN(event)
 	RBP:UpdateTotemDesc()
 	RBP:UpdateWorldFrameHeight(true)
-	SetCVar("showVKeyCastbar", 1)
+	RBP:UpdateCVars()
 	self:UnregisterEvent(event)
 	self[event] = nil
 end

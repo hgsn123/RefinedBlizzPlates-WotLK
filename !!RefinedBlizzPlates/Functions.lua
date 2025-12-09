@@ -31,8 +31,6 @@ local ClassByKey = {
 	[000099] = "FRIENDLY PLAYER",
 }
 
-SetCVar("ShowClassColorInNameplate", 1) -- "Class Colors in Nameplates" must be enabled to identify enemy players
-
 local function ReactionByPlateColor(r, g, b)
 	if r < 0.01 and ((g > 0.99 and b < 0.01) or (g < 0.01 and b > 0.99)) then
 		return "FRIENDLY"
@@ -1435,7 +1433,7 @@ local function UpdateRefinedPlate(Plate)
 				end
 				Virtual.healthBarTex:SetTexture(RBP.LSM:Fetch("statusbar", RBP.dbp.healthBar_playerTex))
 			else
-				if RBP.dbp.enableAggroColoring and RBP.inPvEInstance then
+				if RBP.dbp.enableAggroColoring and (RBP.inPvEInstance or not RBP.dbp.disableAggroOpenworld) then
 					if not Virtual.aggroOverlay then
 						SetupAggroOverlay(Virtual)
 					end
@@ -1822,8 +1820,23 @@ function RBP:UpdateClickboxAttributes()
 	end
 end
 
+function RBP:UpdateCVars()
+	SetCVar("ShowClassColorInNameplate", 1)
+	SetCVar("showVKeyCastbar", 1)
+	if RBP.dbp.stackingEnabled then
+		SetCVar("nameplateAllowOverlap", 1)
+	end
+	if RBP.dbp.enableAggroColoring then
+		if RBP.dbp.disableAggroOpenworld then
+			SetCVar("threatWarning", 1)
+		else
+			SetCVar("threatWarning", 3)
+		end
+	end
+end
+
 function RBP:UpdateProfile()
-	if RBP.dbp.stackingEnabled then SetCVar("nameplateAllowOverlap", 1) end
+	self:UpdateCVars()
 	self:UpdateAllVirtualsScale()
 	self:UpdateAllTexts()
 	self:UpdateAllHealthBars()
